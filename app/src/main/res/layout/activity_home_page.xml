@@ -5,23 +5,22 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".app.presentation.home.HomePageActivity"
+    tools:context=".app.presentation.pages.HomePageActivity"
     android:background="#FFFFFF">
 
     <!-- Header -->
-    <include
-        android:id="@+id/includeHeader"
-        layout="@layout/fragment_header"
-        android:layout_alignParentTop="true"
+    <com.example.btl_nhom1.app.presentation.common.CustomHeaderView
+        android:id="@+id/customHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
 
     <!-- Khu vực nội dung chính với ScrollView -->
     <ScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/includeHeader"
+        android:layout_below="@id/customHeader"
         android:layout_above="@id/includeBottomNav"
         android:fillViewport="true">
 

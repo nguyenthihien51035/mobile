@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Btl_nhom1">
         <activity
-            android:name=".app.presentation.home.GioHangActivity"
+            android:name=".app.presentation.pages.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".app.presentation.home.HomePageActivity"
+            android:name=".app.presentation.pages.CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".app.presentation.pages.HomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

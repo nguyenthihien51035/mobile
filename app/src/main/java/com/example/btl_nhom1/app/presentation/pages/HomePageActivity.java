@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.home;
+package com.example.btl_nhom1.app.presentation.pages;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -6,12 +6,10 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;

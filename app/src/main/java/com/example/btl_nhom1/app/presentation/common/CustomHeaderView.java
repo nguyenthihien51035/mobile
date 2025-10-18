@@ -5,15 +5,13 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.presentation.home.GioHangActivity;
-import com.example.btl_nhom1.app.presentation.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.CartActivity;
+import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
 
 public class CustomHeaderView extends LinearLayout {
     public CustomHeaderView(Context context) {
@@ -37,8 +35,6 @@ public class CustomHeaderView extends LinearLayout {
         ImageView imgLogo = findViewById(R.id.imgLogo);
         TextView tvBadge = findViewById(R.id.tvCartBadge);
         ImageView imgCart = findViewById(R.id.imgCart);
-        FrameLayout cartContainer = findViewById(R.id.cartContainer);
-
         // 👉 Click logo → quay về trang chủ
         imgLogo.setOnClickListener(v -> {
             Intent intent = new Intent(context, HomePageActivity.class);
@@ -47,21 +43,11 @@ public class CustomHeaderView extends LinearLayout {
         });
 
         // (Tuỳ chọn) Click giỏ hàng
-//        imgCart.setOnClickListener(v -> {
-//            Log.d("CustomHeaderView", "Giỏ hàng đã được nhấn!");
-//            Intent intent = new Intent(context, GioHangActivity.class);
-//            context.startActivity(intent);
-//        });
-        if (cartContainer != null) { // Luôn kiểm tra null để tránh crash nếu ID không tìm thấy
-            cartContainer.setOnClickListener(v -> { // <--- THAY ĐỔI Ở ĐÂY
-                Log.d("CustomHeaderView", "Giỏ hàng container đã được nhấn!"); // Cập nhật log
-                Intent intent = new Intent(context, GioHangActivity.class);
-                // Giữ nguyên hoặc xóa cờ tùy theo ý muốn về stack activity của bạn
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                context.startActivity(intent);
-            });
-        } else {
-            Log.e("CustomHeaderView", "Lỗi: cartContainer không tìm thấy trong fragment_header.xml!");
-        }
+        imgCart.setOnClickListener(v -> {
+            Log.d("CustomHeaderView", "Giỏ hàng đã được nhấn!");
+            Intent intent = new Intent(context, CartActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            context.startActivity(intent);
+        });
     }
 }
