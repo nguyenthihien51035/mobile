@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".app.presentation.home.HomePageActivity"
+    android:background="#FFFFFF">
+
+    <!-- Header -->
+    <include
+        android:id="@+id/includeHeader"
+        layout="@layout/fragment_header"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Khu vực nội dung chính với ScrollView -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/includeHeader"
+        android:layout_above="@id/includeBottomNav"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Container cho Slider với RelativeLayout -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Slider -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPagerSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!-- Nút trái -->
+                <ImageButton
+                    android:id="@+id/btnPrev"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_left"
+                    android:background="@android:color/transparent"
+                    android:scaleType="centerInside"
+                    android:padding="8dp"
+                    android:contentDescription="Trước"
+                    android:elevation="8dp" />
+
+                <!-- Nút phải -->
+                <ImageButton
+                    android:id="@+id/btnNext"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_right"
+                    android:background="@android:color/transparent"
+                    android:scaleType="centerInside"
+                    android:padding="8dp"
+                    android:contentDescription="Sau"
+                    android:elevation="8dp" />
+
+            </RelativeLayout>
+
+            <!-- Nội dung chính -->
+            <LinearLayout
+                android:id="@+id/contentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Ví dụ phần nội dung -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sản phẩm mới nhất"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:textAlignment="center" />
+
+                <!-- Thêm nội dung khác của bạn ở đây -->
+
+            </LinearLayout>
+
+            <!-- Footer -->
+            <include
+                android:id="@+id/includeFooter"
+                layout="@layout/fragment_footer" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <include
+        android:id="@+id/includeBottomNav"
+        layout="@layout/fragment_bottom_navigation"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Overlay Background -->
+    <View
+        android:id="@+id/overlayBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone" />
+
+    <!-- Bao gồm phần Bottom Navigation và Menu Panel -->
+    <include
+        layout="@layout/fragment_bottom_navigation_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>

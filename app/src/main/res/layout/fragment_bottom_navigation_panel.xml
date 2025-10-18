@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Bottom Navigation -->
+    <include
+        android:id="@+id/includeBottomNav"
+        layout="@layout/fragment_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+    <!-- Overlay Background -->
+    <View
+        android:id="@+id/overlayBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone" />
+
+    <!-- Panel danh mục trượt từ phải -->
+    <LinearLayout
+        android:id="@+id/menuPanel"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:translationX="1000dp"
+        android:elevation="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/titleMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Danh mục sản phẩm"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/listCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp" />
+    </LinearLayout>
+
+</merge>
