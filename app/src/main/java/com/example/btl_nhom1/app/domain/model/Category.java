@@ -11,13 +11,19 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryItem {
+public class Category {
+    private int id;
     private String name;
-    private List<String> subCategories;
+    private String bannerUrl;
+    private List<Category> children;
 
     @NonNull
     @Override
     public String toString() {
         return name;
+    }
+
+    public boolean hasChildren() {
+        return children != null && !children.isEmpty();
     }
 }

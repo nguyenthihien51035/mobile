@@ -2,14 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="2dp">
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sản phẩm mới nhất"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="#003468"
         android:gravity="center"

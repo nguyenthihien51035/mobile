@@ -9,7 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.btl_nhom1.app.domain.model.CategoryItem;
+import com.example.btl_nhom1.R;
+import com.example.btl_nhom1.app.domain.model.Category;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,23 +18,31 @@ import java.util.Map;
 
 public class ExpandableCategoryAdapter extends BaseAdapter {
     private final Context context;
-    private final List<CategoryItem> categories;
     private final LayoutInflater inflater;
     private final Map<Integer, Boolean> expandedMap = new HashMap<>();
+    private List<Category> categories;
 
-    public ExpandableCategoryAdapter(Context context, List<CategoryItem> categories) {
+    public ExpandableCategoryAdapter(Context context, List<Category> categories) {
         this.context = context;
         this.categories = categories;
         this.inflater = LayoutInflater.from(context);
+    }
+
+    // Phương thức để cập nhật dữ liệu từ API
+    public void updateCategories(List<Category> newCategories) {
+        this.categories = newCategories;
+        this.expandedMap.clear();
+        notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
         int count = 0;
         for (int i = 0; i < categories.size(); i++) {
-            count++; // danh mục cha
-            if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false)) && categories.get(i).getSubCategories() != null) {
-                count += categories.get(i).getSubCategories().size();
+            count++; // parent
+            if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
+                List<Category> subs = categories.get(i).getChildren();
+                if (subs != null) count += subs.size();
             }
         }
         return count;
@@ -46,9 +55,9 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
             if (index == position) return categories.get(i);
             index++;
             if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
-                List<String> subs = categories.get(i).getSubCategories();
+                List<Category> subs = categories.get(i).getChildren();
                 if (subs != null) {
-                    for (String sub : subs) {
+                    for (Category sub : subs) {
                         if (index == position) return sub;
                         index++;
                     }
@@ -63,41 +72,63 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
         return position;
     }
 
+    private boolean hasChildren(Category item) {
+        return item.getChildren() != null && !item.getChildren().isEmpty();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         int index = 0;
         for (int i = 0; i < categories.size(); i++) {
-            CategoryItem cat = categories.get(i);
+            Category parentCat = categories.get(i);
             if (index == position) {
-                // danh mục cha
-                View view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-                TextView text = view.findViewById(android.R.id.text1);
-                text.setText(cat.getName());
-                text.setTextColor(Color.BLACK);
-                text.setPadding(40, 20, 40, 20);
-                text.setTextSize(16);
+                // Danh mục cha
+                View view = inflater.inflate(R.layout.parent_category_item, parent, false);
+                TextView categoryName = view.findViewById(R.id.category_name);
+                TextView expandIcon = view.findViewById(R.id.expand_icon);
+
+                boolean isExpanded = Boolean.TRUE.equals(expandedMap.getOrDefault(i, false));
+                categoryName.setText(parentCat.getName());
+
+                if (hasChildren(parentCat)) {
+                    expandIcon.setVisibility(View.VISIBLE);
+                    expandIcon.setText(isExpanded ? "⌄" : "›");
+                } else {
+                    expandIcon.setVisibility(View.GONE);
+                }
+
                 view.setBackgroundColor(Color.parseColor("#ffffff"));
+
                 int finalI = i;
                 view.setOnClickListener(v -> {
-                    boolean expanded = Boolean.TRUE.equals(expandedMap.getOrDefault(finalI, false));
-                    expandedMap.put(finalI, !expanded);
-                    notifyDataSetChanged();
+                    if (hasChildren(parentCat)) {
+                        boolean expanded = Boolean.TRUE.equals(expandedMap.getOrDefault(finalI, false));
+                        expandedMap.put(finalI, !expanded);
+                        notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(context, "Chọn: " + parentCat.getName(), Toast.LENGTH_SHORT).show();
+                    }
                 });
                 return view;
             }
             index++;
+
             if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
-                List<String> subs = cat.getSubCategories();
+                List<Category> subs = parentCat.getChildren();
                 if (subs != null) {
-                    for (String sub : subs) {
+                    for (Category sub : subs) {
                         if (index == position) {
+                            // Danh mục con
                             View view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
                             TextView text = view.findViewById(android.R.id.text1);
-                            text.setText(sub);
+                            text.setText("   " + sub.getName());
                             text.setPadding(80, 15, 40, 15);
                             text.setTextColor(Color.DKGRAY);
+                            text.setTextSize(14);
+                            view.setBackgroundColor(Color.parseColor("#ffffff"));
+
                             view.setOnClickListener(v -> {
-                                Toast.makeText(context, "Chọn: " + sub, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Chọn: " + sub.getName(), Toast.LENGTH_SHORT).show();
                             });
                             return view;
                         }
