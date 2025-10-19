@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
+import com.example.btl_nhom1.app.presentation.pages.CommingSoonActivity;
 import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
 import com.example.btl_nhom1.app.presentation.pages.LoginActivity;
 
@@ -54,6 +55,16 @@ public class CustomBottomNavigationView extends LinearLayout {
             }
         });
 
+        // Xử lý click cho Khuyến mại
+        navPromotion.setOnClickListener(v -> {
+            if (!(context instanceof CommingSoonActivity)) {
+                Intent intent = new Intent(context, CommingSoonActivity.class);
+                // Các flag này sẽ xóa tất cả Activity trên HomePageActivity và đưa HomePageActivity lên trên cùng
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                context.startActivity(intent);
+            }
+        });
+
         // Xử lý click cho My PNJ
         navMyPNJ.setOnClickListener(v -> {
             // Kiểm tra nếu đang ở LoginActivity thì không làm gì để tránh tạo Activity mới
@@ -64,18 +75,22 @@ public class CustomBottomNavigationView extends LinearLayout {
             }
         });
 
+        // Xử lý click cho Thông báo
+        navNotification.setOnClickListener(v -> {
+            if (!(context instanceof CommingSoonActivity)) {
+                Intent intent = new Intent(context, CommingSoonActivity.class);
+                // Các flag này sẽ xóa tất cả Activity trên HomePageActivity và đưa HomePageActivity lên trên cùng
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                context.startActivity(intent);
+            }
+        });
+
         // Xử lý click cho Danh mục (sử dụng Listener để giao tiếp với Activity)
         navMenu.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCategoryMenuClicked();
             }
         });
-
-        // Xử lý click cho các mục khác (ví dụ: Khuyến mãi, Thông báo, Tư vấn)
-        // Hiện tại chỉ hiển thị Toast
-        navPromotion.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Khuyến mãi", Toast.LENGTH_SHORT).show());
-        navNotification.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Thông báo", Toast.LENGTH_SHORT).show());
-        navConsult.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Tư vấn", Toast.LENGTH_SHORT).show());
     }
 
     // Interface để giao tiếp với Activity chứa nó, ví dụ để mở Category Drawer
