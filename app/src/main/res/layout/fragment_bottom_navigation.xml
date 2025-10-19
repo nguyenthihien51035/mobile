@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:gravity="center"
-            android:text="Mỹ PNJ"
+            android:text="My PNJ"
             android:textColor="#666666"
             android:textSize="11sp"
             android:singleLine="true"

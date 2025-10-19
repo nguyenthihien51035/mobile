@@ -72,29 +72,11 @@
 
             </RelativeLayout>
 
-            <!-- Nội dung chính -->
-            <LinearLayout
-                android:id="@+id/contentContainer"
+            <!-- ProductLatest -->
+            <include
+                layout="@layout/fragment_latest_products"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Ví dụ phần nội dung -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sản phẩm mới nhất"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:textAlignment="center" />
-
-                <!-- Thêm nội dung khác của bạn ở đây -->
-
-            </LinearLayout>
+                android:layout_height="wrap_content" />
 
             <!-- Footer -->
             <include
