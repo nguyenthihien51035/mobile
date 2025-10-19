@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -21,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/customHeader"
-        android:layout_above="@id/includeBottomNav"
+        android:layout_above="@id/customBottomNav"
         android:fillViewport="true">
 
         <LinearLayout
@@ -72,29 +71,10 @@
 
             </RelativeLayout>
 
-            <!-- Nội dung chính -->
-            <LinearLayout
-                android:id="@+id/contentContainer"
-                android:layout_width="match_parent"
+            <include
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Ví dụ phần nội dung -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sản phẩm mới nhất"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:textAlignment="center" />
-
-                <!-- Thêm nội dung khác của bạn ở đây -->
-
-            </LinearLayout>
+                layout="@layout/fragment_latest_products"
+                android:layout_width="match_parent" />
 
             <!-- Footer -->
             <include
@@ -105,50 +85,15 @@
 
     </ScrollView>
 
-    <!-- Bottom Navigation -->
-    <include
-        android:id="@+id/includeBottomNav"
-        layout="@layout/fragment_bottom_navigation"
-        android:layout_alignParentBottom="true"
+    <com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView
+        android:id="@+id/customBottomNav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
-    <!-- Overlay Background -->
-    <View
-        android:id="@+id/overlayBackground"
+    <!-- Custom Category Drawer -->
+    <com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer
+        android:id="@+id/customCategoryDrawer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000"
-        android:visibility="gone" />
-
-    <!-- Panel danh mục trượt từ phải -->
-    <LinearLayout
-        android:id="@+id/menuPanel"
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:background="#FFFFFF"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:translationX="1000dp"
-        android:elevation="10dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/titleMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Danh mục sản phẩm"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_marginBottom="16dp" />
-
-        <ListView
-            android:id="@+id/listCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="0.5dp" />
-    </LinearLayout>
+        android:layout_height="match_parent" />
 </RelativeLayout>

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <!-- Header -->
     <com.example.btl_nhom1.app.presentation.common.CustomHeaderView
@@ -18,6 +16,7 @@
         android:id="@+id/tvBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/customHeader"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:drawableStart="@drawable/ic_back"
@@ -27,8 +26,10 @@
         android:textSize="15sp" />
 
     <TextView
+        android:id="@+id/tvPageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/tvBack"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Giỏ Hàng"
@@ -37,13 +38,15 @@
         android:textStyle="bold" />
 
     <LinearLayout
+        android:id="@+id/llSelectAllHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_below="@id/tvPageTitle"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/cbSelectAll"
@@ -68,11 +71,126 @@
             app:tint="#999999" />
     </LinearLayout>
 
-    <ScrollView
+    <!-- Bottom Navigation - Phải ở cấp độ trên cùng của RelativeLayout -->
+    <com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView
+        android:id="@+id/customBottomNav"
         android:layout_width="match_parent"
-        android:layout_height="187dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+    <!-- Summary and Checkout - Phải ở trên Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/llCartSummaryAndCheckout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/customBottomNav"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tạm tính"
+                android:textColor="#5A5A5A"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvSubtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 đ"
+                android:textColor="#5A5A5A"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Giảm giá"
+                android:textColor="#003468"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvDiscount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="- 0 đ"
+                android:textColor="#003468"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tổng tiền"
+                android:textColor="#003468"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 đ"
+                android:textColor="#003468"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="end"
+            android:text="(Giá tham khảo đã bao gồm VAT)"
+            android:textColor="#5A5A5A"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+
+        <Button
+            android:id="@+id/btnCheckout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/button_primary_bg"
+            android:text="Tiếp tục"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="#003468" />
+    </LinearLayout>
+
+    <!-- ScrollView for Cart Items - Ở giữa header và summary/checkout -->
+    <ScrollView
+        android:id="@+id/scrollCartItems"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/llCartSummaryAndCheckout"
+        android:layout_below="@id/llSelectAllHeader"
+        android:layout_marginTop="8dp">
 
         <LinearLayout
             android:id="@+id/llCartItems"
@@ -80,7 +198,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Cart Item -->
+            <!-- Cart Item (giữ nguyên) -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,156 +302,28 @@
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
+    <!-- Overlay Background - Để che mờ phần còn lại khi drawer mở -->
+    <View
+        android:id="@+id/overlayBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:elevation="8dp"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+    <!-- Panel danh mục trượt từ phải (Custom Category Drawer) -->
+    <!-- Sử dụng CustomCategoryDrawer thay vì LinearLayout trực tiếp -->
+    <com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer
+        android:id="@+id/customCategoryDrawer"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:elevation="10dp"
+        android:translationX="280dp"
+        android:visibility="gone" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tạm tính"
-                android:textColor="#5A5A5A"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tvSubtotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 đ"
-                android:textColor="#5A5A5A"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Giảm giá"
-                android:textColor="#003468"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tvDiscount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="- 0 đ"
-                android:textColor="#003468"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tổng tiền"
-                android:textColor="#003468"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 đ"
-                android:textColor="#003468"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif-light"
-            android:gravity="end"
-            android:text="(Giá tham khảo đã bao gồm VAT)"
-            android:textColor="#5A5A5A"
-            android:textSize="12sp"
-            android:textStyle="italic" />
-
-        <Button
-            android:id="@+id/btnCheckout"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/button_primary_bg"
-            android:text="Tiếp tục"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="#003468" />
-
-        <!-- Bottom Navigation -->
-        <include
-            android:id="@+id/includeBottomNav"
-            layout="@layout/fragment_bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" />
-
-        <!-- Overlay Background -->
-        <View
-            android:id="@+id/overlayBackground"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#80000000"
-            android:visibility="gone" />
-
-        <!-- Panel danh mục trượt từ phải -->
-        <LinearLayout
-            android:id="@+id/menuPanel"
-            android:layout_width="280dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:background="#FFFFFF"
-            android:elevation="10dp"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:translationX="1000dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/titleMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Danh mục sản phẩm"
-                android:textColor="#333333"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <ListView
-                android:id="@+id/listCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@android:color/darker_gray"
-                android:dividerHeight="0.5dp" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</RelativeLayout>
