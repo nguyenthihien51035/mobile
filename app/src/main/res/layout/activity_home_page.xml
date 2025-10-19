@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".app.presentation.pages.HomePageActivity"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    tools:context=".app.presentation.pages.HomePageActivity">
 
     <!-- Header -->
     <com.example.btl_nhom1.app.presentation.common.CustomHeaderView
@@ -20,8 +19,8 @@
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/customHeader"
         android:layout_above="@id/customBottomNav"
+        android:layout_below="@id/customHeader"
         android:fillViewport="true">
 
         <LinearLayout
@@ -45,56 +44,39 @@
                     android:id="@+id/btnPrev"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_left"
                     android:background="@android:color/transparent"
-                    android:scaleType="centerInside"
-                    android:padding="8dp"
                     android:contentDescription="Trước"
-                    android:elevation="8dp" />
+                    android:elevation="8dp"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_left" />
 
                 <!-- Nút phải -->
                 <ImageButton
                     android:id="@+id/btnNext"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="8dp"
-                    android:src="@drawable/ic_right"
                     android:background="@android:color/transparent"
-                    android:scaleType="centerInside"
-                    android:padding="8dp"
                     android:contentDescription="Sau"
-                    android:elevation="8dp" />
+                    android:elevation="8dp"
+                    android:padding="8dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_right" />
 
             </RelativeLayout>
 
             <!-- Nội dung chính -->
-            <LinearLayout
-                android:id="@+id/contentContainer"
-                android:layout_width="match_parent"
+
+            <include
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Ví dụ phần nội dung -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sản phẩm mới nhất"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:textAlignment="center" />
-
-                <!-- Thêm nội dung khác của bạn ở đây -->
-
-            </LinearLayout>
+                android:layout_width="match_parent"
+                layout="@layout/fragment_latest_products" />
 
             <!-- Footer -->
             <include
@@ -108,9 +90,9 @@
     <!-- Bottom Navigation -->
     <com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView
         android:id="@+id/customBottomNav"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
     <!-- Custom Category Drawer -->
     <com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer

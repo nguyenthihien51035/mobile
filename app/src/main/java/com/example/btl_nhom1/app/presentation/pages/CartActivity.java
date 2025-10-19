@@ -1,7 +1,6 @@
 package com.example.btl_nhom1.app.presentation.pages;
 
 import android.os.Bundle;
-import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;

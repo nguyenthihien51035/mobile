@@ -12,16 +12,7 @@ import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
 import com.example.btl_nhom1.app.presentation.pages.LoginActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
-    // Interface để giao tiếp với Activity chứa nó, ví dụ để mở Category Drawer
-    public interface OnBottomNavigationItemClickListener {
-        void onCategoryMenuClicked();
-    }
-
     private OnBottomNavigationItemClickListener listener;
-
-    public void setOnBottomNavigationItemClickListener(OnBottomNavigationItemClickListener listener) {
-        this.listener = listener;
-    }
 
     public CustomBottomNavigationView(Context context) {
         super(context);
@@ -36,6 +27,10 @@ public class CustomBottomNavigationView extends LinearLayout {
     public CustomBottomNavigationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
+    }
+
+    public void setOnBottomNavigationItemClickListener(OnBottomNavigationItemClickListener listener) {
+        this.listener = listener;
     }
 
     private void init(Context context) {
@@ -81,5 +76,10 @@ public class CustomBottomNavigationView extends LinearLayout {
         navPromotion.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Khuyến mãi", Toast.LENGTH_SHORT).show());
         navNotification.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Thông báo", Toast.LENGTH_SHORT).show());
         navConsult.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Tư vấn", Toast.LENGTH_SHORT).show());
+    }
+
+    // Interface để giao tiếp với Activity chứa nó, ví dụ để mở Category Drawer
+    public interface OnBottomNavigationItemClickListener {
+        void onCategoryMenuClicked();
     }
 }
