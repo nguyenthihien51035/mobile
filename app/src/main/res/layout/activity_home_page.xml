@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/customHeader"
-        android:layout_above="@id/includeBottomNav"
+        android:layout_above="@id/customBottomNav"
         android:fillViewport="true">
 
         <LinearLayout
@@ -106,24 +106,15 @@
     </ScrollView>
 
     <!-- Bottom Navigation -->
-    <include
-        android:id="@+id/includeBottomNav"
-        layout="@layout/fragment_bottom_navigation"
+    <com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView
+        android:id="@+id/customBottomNav"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- Overlay Background -->
-    <View
-        android:id="@+id/overlayBackground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000"
-        android:visibility="gone" />
-
-    <!-- Bao gồm phần Bottom Navigation và Menu Panel -->
-    <include
-        layout="@layout/fragment_bottom_navigation_panel"
+    <!-- Custom Category Drawer -->
+    <com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer
+        android:id="@+id/customCategoryDrawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

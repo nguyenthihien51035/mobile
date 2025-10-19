@@ -22,11 +22,13 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.CategoryItem;
 import com.example.btl_nhom1.app.presentation.adapter.ExpandableCategoryAdapter;
 import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
+import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
+import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
 
     // Slider
     private ViewPager2 viewPager;
@@ -41,6 +43,8 @@ public class HomePageActivity extends AppCompatActivity {
     );
     private static final long SLIDE_DELAY_MS = 5000L;
     //---------------------
+    private CustomCategoryDrawer customCategoryDrawer;
+    private CustomBottomNavigationView customBottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,71 +84,24 @@ public class HomePageActivity extends AppCompatActivity {
         // ---------------- End Slider ----------------
 
 
-        // ---------------- Danh mục (menu trượt) ----------------
-        View bottomNavLayout = findViewById(R.id.includeBottomNav);
-        if (bottomNavLayout == null) {
-            // Đây là một kiểm tra an toàn. Nếu includeBottomNav không tìm thấy, có vấn đề lớn hơn.
-            Log.e("HomePageActivity", "ERROR: includeBottomNav not found in activity_home_page.xml");
-            // Thoát hoặc thông báo lỗi để tránh crash
-            return;
+        // ---------------- Danh mục (menu trượt) - Sử dụng CustomCategoryDrawer ----------------
+        customCategoryDrawer = findViewById(R.id.customCategoryDrawer); // Ánh xạ Custom View
+
+        // ---------------- CustomBottomNavigationView ----------------
+        customBottomNav = findViewById(R.id.customBottomNav);
+        if (customBottomNav != null) {
+            customBottomNav.setOnBottomNavigationItemClickListener(this); // Đặt listener cho bottom nav
+        } else {
+            Log.e("HomePageActivity", "CustomBottomNavigationView not found.");
         }
+        // ---------------- End CustomBottomNavigationView ----------------
+    }
 
-
-        LinearLayout navMenu = bottomNavLayout.findViewById(R.id.navMenu);
-        if (navMenu == null) {
-            Log.e("HomePageActivity", "ERROR: navMenu not found in fragment_bottom_navigation.xml.");
-            return;
+    @Override
+    public void onCategoryMenuClicked() {
+        if (customCategoryDrawer != null) {
+            customCategoryDrawer.openDrawer();
         }
-
-        LinearLayout menuPanel = findViewById(R.id.menuPanel);
-        View overlay = findViewById(R.id.overlayBackground);
-        ListView listCategory = findViewById(R.id.listCategory);
-
-        if (menuPanel == null || overlay == null || listCategory == null) {
-            Log.e("HomePageActivity", "ERROR: menuPanel, overlay or listCategory not found.");
-            return;
-        }
-
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int screenWidth = metrics.widthPixels;
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) menuPanel.getLayoutParams();
-        params.width = (int) (screenWidth * 0.7);
-        menuPanel.setLayoutParams(params);
-
-        List<CategoryItem> categories = Arrays.asList(
-                new CategoryItem("Nhẫn", Arrays.asList("Nhẫn Vàng", "Nhẫn Kim Cương", "Nhẫn Bạc")),
-                new CategoryItem("Dây chuyền", Arrays.asList("Dây Chuyền Vàng", "Dây Chuyền Bạc")),
-                new CategoryItem("Bông tai", null),
-                new CategoryItem("Vòng tay", null),
-                new CategoryItem("Đồng hồ", null),
-                new CategoryItem("Trang sức cưới", null)
-        );
-
-        ExpandableCategoryAdapter adapter = new ExpandableCategoryAdapter(this, categories);
-        listCategory.setAdapter(adapter);
-
-        navMenu.setOnClickListener(v -> {
-            menuPanel.setVisibility(View.VISIBLE);
-            overlay.setVisibility(View.VISIBLE);
-            menuPanel.post(() -> {
-                menuPanel.setTranslationX(menuPanel.getWidth());
-                menuPanel.animate().translationX(0).setDuration(300).start();
-            });
-        });
-
-        overlay.setOnClickListener(v -> {
-            menuPanel.post(() -> {
-                menuPanel.animate()
-                        .translationX(menuPanel.getWidth())
-                        .setDuration(300)
-                        .withEndAction(() -> {
-                            menuPanel.setVisibility(View.GONE);
-                            overlay.setVisibility(View.GONE);
-                        })
-                        .start();
-            });
-        });
-        // ---------------- End Danh mục ----------------
     }
 
     // SuKienSlider
