@@ -5,23 +5,34 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 public class CategoryItem {
+    private final int id;
     private final String name;
-    private final List<String> subCategories;
+    private final String bannerUrl;
+    private final List<CategoryItem> children;
 
-    public CategoryItem(String name, List<String> subCategories) {
+    public CategoryItem(int id, String name, String bannerUrl, List<CategoryItem> children) {
+        this.id = id;
         this.name = name;
-        this.subCategories = subCategories;
+        this.bannerUrl = bannerUrl;
+        this.children = children;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<String> getSubCategories() {
-        return subCategories;
+    public String getBannerUrl() {
+        return bannerUrl;
     }
 
-    // Ghi đè toString để ListView hiển thị đúng tên danh mục chính
+    public List<CategoryItem> getChildren() {
+        return children;
+    }
+
     @NonNull
     @Override
     public String toString() {

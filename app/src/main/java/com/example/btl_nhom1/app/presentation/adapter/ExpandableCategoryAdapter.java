@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ExpandableCategoryAdapter extends BaseAdapter {
     private final Context context;
-    private final List<CategoryItem> categories;
+    private final List<CategoryItem> categories; // danh sách parent
     private final LayoutInflater inflater;
     private final Map<Integer, Boolean> expandedMap = new HashMap<>();
 
@@ -31,25 +31,30 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
     public int getCount() {
         int count = 0;
         for (int i = 0; i < categories.size(); i++) {
-            count++; // danh mục cha
-            if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false)) && categories.get(i).getSubCategories() != null) {
-                count += categories.get(i).getSubCategories().size();
+            count++; // parent
+            if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
+                List<CategoryItem> subs = categories.get(i).getChildren();
+                if (subs != null) count += subs.size();
             }
         }
         return count;
     }
 
+    /**
+     * Trả về object tương ứng: nếu là parent -> CategoryItem (parent)
+     * nếu là child -> CategoryItem (child)
+     */
     @Override
     public Object getItem(int position) {
         int index = 0;
         for (int i = 0; i < categories.size(); i++) {
-            if (index == position) return categories.get(i);
+            if (index == position) return categories.get(i); // parent
             index++;
             if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
-                List<String> subs = categories.get(i).getSubCategories();
+                List<CategoryItem> subs = categories.get(i).getChildren();
                 if (subs != null) {
-                    for (String sub : subs) {
-                        if (index == position) return sub;
+                    for (CategoryItem sub : subs) {
+                        if (index == position) return sub; // child
                         index++;
                     }
                 }
@@ -60,6 +65,7 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
+        // Không có id toàn cục, trả về position
         return position;
     }
 
@@ -67,12 +73,12 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         int index = 0;
         for (int i = 0; i < categories.size(); i++) {
-            CategoryItem cat = categories.get(i);
+            CategoryItem parentCat = categories.get(i);
             if (index == position) {
-                // danh mục cha
+                // parent view
                 View view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
                 TextView text = view.findViewById(android.R.id.text1);
-                text.setText(cat.getName());
+                text.setText(parentCat.getName() + (hasChildren(parentCat) ? " +" : ""));
                 text.setTextColor(Color.BLACK);
                 text.setPadding(40, 20, 40, 20);
                 text.setTextSize(16);
@@ -87,17 +93,18 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
             }
             index++;
             if (Boolean.TRUE.equals(expandedMap.getOrDefault(i, false))) {
-                List<String> subs = cat.getSubCategories();
+                List<CategoryItem> subs = parentCat.getChildren();
                 if (subs != null) {
-                    for (String sub : subs) {
+                    for (CategoryItem sub : subs) {
                         if (index == position) {
                             View view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
                             TextView text = view.findViewById(android.R.id.text1);
-                            text.setText(sub);
+                            text.setText(sub.getName());
                             text.setPadding(80, 15, 40, 15);
                             text.setTextColor(Color.DKGRAY);
                             view.setOnClickListener(v -> {
-                                Toast.makeText(context, "Chọn: " + sub, Toast.LENGTH_SHORT).show();
+                                // Ví dụ: show id khi click. Bạn có thể thay bằng callback để Activity xử lý
+                                Toast.makeText(context, "Chọn: " + sub.getName() + " (id=" + sub.getId() + ")", Toast.LENGTH_SHORT).show();
                             });
                             return view;
                         }
@@ -106,6 +113,13 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
                 }
             }
         }
-        return null;
+        // Không nên tới đây, nhưng trả view rỗng để tránh crash
+        View fallback = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+        ((TextView) fallback.findViewById(android.R.id.text1)).setText("");
+        return fallback;
+    }
+
+    private boolean hasChildren(CategoryItem item) {
+        return item.getChildren() != null && !item.getChildren().isEmpty();
     }
 }
