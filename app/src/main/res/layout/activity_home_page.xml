@@ -74,9 +74,9 @@
             <!-- Nội dung chính -->
 
             <include
-                android:layout_height="wrap_content"
+                layout="@layout/fragment_latest_products"
                 android:layout_width="match_parent"
-                layout="@layout/fragment_latest_products" />
+                android:layout_height="wrap_content" />
 
             <!-- Footer -->
             <include

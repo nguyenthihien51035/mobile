@@ -13,24 +13,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-
-import com.android.volley.toolbox.Volley;
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
 import com.example.btl_nhom1.app.domain.model.Product;
+import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
 import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
 import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
-import com.google.gson.Gson;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -40,8 +35,7 @@ import java.util.Locale;
 public class HomePageActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
 
     private static final long SLIDE_DELAY_MS = 5000L;
-    //  ---------------- Call API product latest ----------------
-    private static final String API_URL = "http://192.168.100.205/api/getlatest.php?action=latest";
+
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<Integer> imageList = Arrays.asList(
             R.drawable.slider_ba,
@@ -49,16 +43,19 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             R.drawable.slider_mot,
             R.drawable.slider_hai
     );
+
     // Slider
     private ViewPager2 viewPager;
     private Runnable sliderRunnable;
     private int currentIndex = 0;
-    //---------------------
+
+    // Views
     private CustomCategoryDrawer customCategoryDrawer;
     private CustomBottomNavigationView customBottomNav;
     private LinearLayout productContainer;
-    private RequestQueue requestQueue;
 
+    // Repository
+    private ProductRepository productRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +68,54 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             return insets;
         });
 
-        // ---------------- Slider ----------------
+        // Khởi tạo Repository
+        productRepository = new ProductRepository(this);
+
+        // Khởi tạo views
+        initViews();
+
+        // Thiết lập slider
+        setupSlider();
+
+        // Gọi API để lấy danh sách sản phẩm
+        fetchProducts();
+
+        // Xử lý nút BackCate
+        setupBackPressHandler();
+    }
+
+    private void setupBackPressHandler() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Nếu drawer đang mở, đóng drawer
+                if (customCategoryDrawer != null && customCategoryDrawer.isDrawerOpen()) {
+                    customCategoryDrawer.closeDrawer();
+                } else {
+                    // Nếu không, thoát activity
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
+    }
+
+    private void initViews() {
+        productContainer = findViewById(R.id.productContainer);
+
+        // CustomCategoryDrawer
+        customCategoryDrawer = findViewById(R.id.customCategoryDrawer);
+
+        // CustomBottomNavigationView
+        customBottomNav = findViewById(R.id.customBottomNav);
+        if (customBottomNav != null) {
+            customBottomNav.setOnBottomNavigationItemClickListener(this);
+        } else {
+            Log.e("HomePageActivity", "CustomBottomNavigationView not found.");
+        }
+    }
+
+    private void setupSlider() {
         viewPager = findViewById(R.id.viewPagerSlider);
         viewPager.setAdapter(new SliderAdapter(imageList));
 
@@ -80,7 +124,6 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             viewPager.setCurrentItem(currentIndex, true);
             handler.postDelayed(sliderRunnable, SLIDE_DELAY_MS);
         };
-        // start/stop handled in onResume/onPause
 
         ImageButton btnPrev = findViewById(R.id.btnPrev);
         ImageButton btnNext = findViewById(R.id.btnNext);
@@ -95,26 +138,6 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             int nextIndex = (viewPager.getCurrentItem() + 1) % imageList.size();
             viewPager.setCurrentItem(nextIndex, true);
         });
-        // ---------------- End Slider ----------------
-
-
-        // ---------------- Danh mục (menu trượt) - Sử dụng CustomCategoryDrawer ----------------
-        customCategoryDrawer = findViewById(R.id.customCategoryDrawer); // Ánh xạ Custom View
-
-        // ---------------- CustomBottomNavigationView ----------------
-        customBottomNav = findViewById(R.id.customBottomNav);
-        if (customBottomNav != null) {
-            customBottomNav.setOnBottomNavigationItemClickListener(this); // Đặt listener cho bottom nav
-        } else {
-            Log.e("HomePageActivity", "CustomBottomNavigationView not found.");
-        }
-        // ---------------- End CustomBottomNavigationView ----------------
-
-        // Gọi API để lấy danh sách sản phẩm
-        productContainer = findViewById(R.id.productContainer);
-        requestQueue = Volley.newRequestQueue(this);
-
-        fetchProducts();
     }
 
     @Override
@@ -124,7 +147,7 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         }
     }
 
-    // SuKienSlider
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -137,31 +160,27 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         handler.postDelayed(sliderRunnable, SLIDE_DELAY_MS);
     }
 
-    // ----------------
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (productRepository != null) {
+            productRepository.cancelAllRequests();
+        }
+    }
+
+    // Call API thông qua Repository
     private void fetchProducts() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, API_URL,
-                response -> {
-                    try {
-                        // Parse JSON response
-                        Gson gson = new Gson();
-                        ApiResponse productResponse = gson.fromJson(response, ApiResponse.class);
+        productRepository.fetchLatestProducts(new ProductRepository.ProductCallback() {
+            @Override
+            public void onSuccess(List<Product> products) {
+                displayProducts(products);
+            }
 
-                        if (productResponse != null && productResponse.getData() != null) {
-                            displayProducts(productResponse.getData());
-                        } else {
-                            Toast.makeText(HomePageActivity.this, "Không có dữ liệu", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(HomePageActivity.this, "Lỗi parse dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    Toast.makeText(HomePageActivity.this, "Lỗi kết nối API: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-
-        requestQueue.add(stringRequest);
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(HomePageActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void displayProducts(List<Product> products) {
@@ -209,7 +228,7 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     }
 
     private View createProductView(Product product) {
-        // Inflate layout từ XML - PHẢI DÙNG item_product
+        // Inflate layout từ XML
         LayoutInflater inflater = LayoutInflater.from(this);
         View view = inflater.inflate(R.layout.item_product, null);
 
@@ -247,14 +266,12 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         }
 
         // Load hình ảnh từ drawable
-        String imageName = product.getPrimaryImageUrl(); // Tên ảnh không có đuôi
+        String imageName = product.getPrimaryImageUrl();
         int imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
 
         if (imageResId != 0) {
-            // Nếu tìm thấy ảnh trong drawable
             imgProduct.setImageResource(imageResId);
         } else {
-            // Nếu không tìm thấy, dùng ảnh placeholder
             imgProduct.setImageResource(R.drawable.nullimage);
         }
 
@@ -265,6 +282,5 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         });
 
         return view;
-        // -----------------------
     }
 }
