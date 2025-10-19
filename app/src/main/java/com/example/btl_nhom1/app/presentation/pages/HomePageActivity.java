@@ -3,15 +3,12 @@ package com.example.btl_nhom1.app.presentation.pages;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +25,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
-import com.example.btl_nhom1.app.domain.model.CategoryItem;
 import com.example.btl_nhom1.app.domain.model.Product;
-import com.example.btl_nhom1.app.presentation.adapter.ExpandableCategoryAdapter;
 import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
+import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
+import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
 import com.google.gson.Gson;
 
 import java.text.NumberFormat;
@@ -39,9 +36,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class HomePageActivity extends AppCompatActivity {
+public class HomePageActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
 
     private static final long SLIDE_DELAY_MS = 5000L;
+    //  ---------------- Call API product latest ----------------
+    private static final String API_URL = "http://192.168.100.253/api/getlatest.php?action=latest";
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<Integer> imageList = Arrays.asList(
             R.drawable.slider_ba,
@@ -52,12 +51,10 @@ public class HomePageActivity extends AppCompatActivity {
     // Slider
     private ViewPager2 viewPager;
     private Runnable sliderRunnable;
-    private int currentIndex = 0;
     //---------------------
-
-
-    //  ---------------- Call API product latest ----------------
-    private static final String API_URL = "http://192.168.100.253/api/getlatest.php?action=latest";
+    private int currentIndex = 0;
+    private CustomCategoryDrawer customCategoryDrawer;
+    private CustomBottomNavigationView customBottomNav;
     private LinearLayout productContainer;
     private RequestQueue requestQueue;
 
@@ -100,77 +97,32 @@ public class HomePageActivity extends AppCompatActivity {
         // ---------------- End Slider ----------------
 
 
-        // ---------------- Danh mục (menu trượt) ----------------
-        View bottomNavLayout = findViewById(R.id.includeBottomNav);
-        if (bottomNavLayout == null) {
-            // Đây là một kiểm tra an toàn. Nếu includeBottomNav không tìm thấy, có vấn đề lớn hơn.
-            Log.e("HomePageActivity", "ERROR: includeBottomNav not found in activity_home_page.xml");
-            // Thoát hoặc thông báo lỗi để tránh crash
-            return;
+        // ---------------- Danh mục (menu trượt) - Sử dụng CustomCategoryDrawer ----------------
+        customCategoryDrawer = findViewById(R.id.customCategoryDrawer); // Ánh xạ Custom View
+
+
+        // ---------------- CustomBottomNavigationView ----------------
+        customBottomNav = findViewById(R.id.customBottomNav);
+        if (customBottomNav != null) {
+            customBottomNav.setOnBottomNavigationItemClickListener(this); // Đặt listener cho bottom nav
+        } else {
+            Log.e("HomePageActivity", "CustomBottomNavigationView not found.");
         }
+        // ---------------- End CustomBottomNavigationView ----------------
 
-
-        LinearLayout navMenu = bottomNavLayout.findViewById(R.id.navMenu);
-        if (navMenu == null) {
-            Log.e("HomePageActivity", "ERROR: navMenu not found in fragment_bottom_navigation.xml.");
-            return;
-        }
-
-        LinearLayout menuPanel = findViewById(R.id.menuPanel);
-        View overlay = findViewById(R.id.overlayBackground);
-        ListView listCategory = findViewById(R.id.listCategory);
-
-        if (menuPanel == null || overlay == null || listCategory == null) {
-            Log.e("HomePageActivity", "ERROR: menuPanel, overlay or listCategory not found.");
-            return;
-        }
-
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int screenWidth = metrics.widthPixels;
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) menuPanel.getLayoutParams();
-        params.width = (int) (screenWidth * 0.7);
-        menuPanel.setLayoutParams(params);
-
-        List<CategoryItem> categories = Arrays.asList(
-                new CategoryItem("Nhẫn", Arrays.asList("Nhẫn Vàng", "Nhẫn Kim Cương", "Nhẫn Bạc")),
-                new CategoryItem("Dây chuyền", Arrays.asList("Dây Chuyền Vàng", "Dây Chuyền Bạc")),
-                new CategoryItem("Bông tai", null),
-                new CategoryItem("Vòng tay", null),
-                new CategoryItem("Đồng hồ", null),
-                new CategoryItem("Trang sức cưới", null)
-        );
-
-        ExpandableCategoryAdapter adapter = new ExpandableCategoryAdapter(this, categories);
-        listCategory.setAdapter(adapter);
-
-        navMenu.setOnClickListener(v -> {
-            menuPanel.setVisibility(View.VISIBLE);
-            overlay.setVisibility(View.VISIBLE);
-            menuPanel.post(() -> {
-                menuPanel.setTranslationX(menuPanel.getWidth());
-                menuPanel.animate().translationX(0).setDuration(300).start();
-            });
-        });
-
-        overlay.setOnClickListener(v -> {
-            menuPanel.post(() -> {
-                menuPanel.animate()
-                        .translationX(menuPanel.getWidth())
-                        .setDuration(300)
-                        .withEndAction(() -> {
-                            menuPanel.setVisibility(View.GONE);
-                            overlay.setVisibility(View.GONE);
-                        })
-                        .start();
-            });
-        });
-        // ---------------- End Danh mục ----------------
 
         // Gọi API để lấy danh sách sản phẩm
         productContainer = findViewById(R.id.productContainer);
         requestQueue = Volley.newRequestQueue(this);
 
         fetchProducts();
+    }
+
+    @Override
+    public void onCategoryMenuClicked() {
+        if (customCategoryDrawer != null) {
+            customCategoryDrawer.openDrawer();
+        }
     }
 
     // SuKienSlider
@@ -260,7 +212,7 @@ public class HomePageActivity extends AppCompatActivity {
     }
 
     private View createProductView(Product product) {
-        // Inflate layout từ XML - PHẢI DÙNG item_product
+        // Inflate layout từ XML
         LayoutInflater inflater = LayoutInflater.from(this);
         View view = inflater.inflate(R.layout.item_product, null);
 
