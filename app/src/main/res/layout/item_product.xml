@@ -70,6 +70,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textAlignment="center" />
+
             <!-- Đã bán -->
             <TextView
                 android:id="@+id/tvSold"

@@ -27,7 +27,7 @@
                 android:text="Kết nối với chúng tôi"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#1976D2"
+                android:textColor="#003468"
                 android:layout_marginBottom="16dp" />
 
             <LinearLayout
@@ -134,7 +134,7 @@
                             android:text="PRODUCTS"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#1976D2"
+                            android:textColor="#003468"
                             android:letterSpacing="0.1"
                             android:layout_marginBottom="12dp" />
 
@@ -183,7 +183,7 @@
                             android:text="USEFUL LINKS"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#1976D2"
+                            android:textColor="#003468"
                             android:letterSpacing="0.1"
                             android:layout_marginBottom="12dp" />
 
@@ -250,7 +250,7 @@
                             android:text="CONTACT"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#1976D2"
+                            android:textColor="#003468"
                             android:letterSpacing="0.1"
                             android:layout_marginBottom="12dp" />
 
@@ -275,7 +275,7 @@
                                     android:src="@drawable/ic_home"
                                     android:layout_gravity="center"
                                     android:contentDescription="Address"
-                                    app:tint="#1976D2" />
+                                    app:tint="#003468" />
                             </androidx.cardview.widget.CardView>
 
                             <TextView
@@ -308,7 +308,7 @@
                                     android:src="@drawable/ic_email"
                                     android:layout_gravity="center"
                                     android:contentDescription="Email"
-                                    app:tint="#1976D2" />
+                                    app:tint="#003468" />
                             </androidx.cardview.widget.CardView>
 
                             <TextView
@@ -341,7 +341,7 @@
                                     android:src="@drawable/ic_phone"
                                     android:layout_gravity="center"
                                     android:contentDescription="Phone"
-                                    app:tint="#1976D2" />
+                                    app:tint="#003468" />
                             </androidx.cardview.widget.CardView>
 
                             <TextView
@@ -373,7 +373,7 @@
                                     android:src="@drawable/ic_print"
                                     android:layout_gravity="center"
                                     android:contentDescription="Fax"
-                                    app:tint="#1976D2" />
+                                    app:tint="#003468" />
                             </androidx.cardview.widget.CardView>
 
                             <TextView
@@ -395,7 +395,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#1976D2"
+            android:background="#003468"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="16dp">
@@ -417,5 +417,6 @@
         </LinearLayout>
 
     </LinearLayout>
+
 
 </ScrollView>

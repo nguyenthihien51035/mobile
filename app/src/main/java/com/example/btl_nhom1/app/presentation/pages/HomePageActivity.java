@@ -52,7 +52,8 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     // Views
     private CustomCategoryDrawer customCategoryDrawer;
     private CustomBottomNavigationView customBottomNav;
-    private LinearLayout productContainer;
+    private LinearLayout latestProductContainer;
+    private LinearLayout topSellingProductContainer;
 
     // Repository
     private ProductRepository productRepository;
@@ -77,8 +78,9 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         // Thiết lập slider
         setupSlider();
 
-        // Gọi API để lấy danh sách sản phẩm
-        fetchProducts();
+        // Gọi API
+        fetchLatestProducts();
+        fetchTopSellingProducts();
 
         // Xử lý nút BackCate
         setupBackPressHandler();
@@ -101,7 +103,11 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     }
 
     private void initViews() {
-        productContainer = findViewById(R.id.productContainer);
+        View latestInclude = findViewById(R.id.includeLatest);
+        View topSellingInclude = findViewById(R.id.includeTopSelling);
+
+        topSellingProductContainer = topSellingInclude.findViewById(R.id.productContainer);
+        latestProductContainer = latestInclude.findViewById(R.id.productContainer);
 
         // CustomCategoryDrawer
         customCategoryDrawer = findViewById(R.id.customCategoryDrawer);
@@ -169,38 +175,48 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     }
 
     // Call API thông qua Repository
-    private void fetchProducts() {
+    private void fetchLatestProducts() {
         productRepository.fetchLatestProducts(new ProductRepository.ProductCallback() {
             @Override
             public void onSuccess(List<Product> products) {
-                displayProducts(products);
+                displayProducts(products, latestProductContainer);
             }
 
             @Override
             public void onError(String errorMessage) {
-                Toast.makeText(HomePageActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomePageActivity.this, "Lỗi latest: " + errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void displayProducts(List<Product> products) {
-        // Xóa tất cả view cũ
-        productContainer.removeAllViews();
+    private void fetchTopSellingProducts() {
+        productRepository.fetchTopSellingProducts(new ProductRepository.ProductCallback() {
+            @Override
+            public void onSuccess(List<Product> products) {
+                displayProducts(products, topSellingProductContainer);
+            }
 
-        // Tạo các hàng, mỗi hàng chứa 2 sản phẩm
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(HomePageActivity.this, "Lỗi top selling: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void displayProducts(List<Product> products, LinearLayout container) {
+        container.removeAllViews();
+
         for (int i = 0; i < products.size(); i += 2) {
             LinearLayout row = createProductRow();
 
-            // Thêm sản phẩm 1
             View productView1 = createProductView(products.get(i));
             row.addView(productView1);
 
-            // Thêm sản phẩm 2 nếu còn
             if (i + 1 < products.size()) {
                 View productView2 = createProductView(products.get(i + 1));
                 row.addView(productView2);
             } else {
-                // Thêm view trống để cân bằng layout
                 View emptyView = new View(this);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         0,
@@ -211,7 +227,7 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
                 row.addView(emptyView);
             }
 
-            productContainer.addView(row);
+            container.addView(row);
         }
     }
 
