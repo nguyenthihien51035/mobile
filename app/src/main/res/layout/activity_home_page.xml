@@ -72,11 +72,21 @@
             </RelativeLayout>
 
             <!-- Nội dung chính -->
-
+            <!--Sản phẩm mới-->
             <include
                 layout="@layout/fragment_latest_products"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <!-- Phân trang -->
+            <LinearLayout
+                android:id="@+id/paginationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="#ffffff" />
 
             <!-- Footer -->
             <include

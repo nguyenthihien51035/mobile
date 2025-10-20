@@ -26,15 +26,20 @@ import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
 import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
 import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
+import com.example.btl_nhom1.app.presentation.common.CustomPagination;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class HomePageActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
+public class HomePageActivity extends AppCompatActivity
+        implements CustomBottomNavigationView.OnBottomNavigationItemClickListener,
+        CustomPagination.PaginationListener {
 
     private static final long SLIDE_DELAY_MS = 5000L;
+    private static final int ITEMS_PER_PAGE = 8;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<Integer> imageList = Arrays.asList(
@@ -53,9 +58,14 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     private CustomCategoryDrawer customCategoryDrawer;
     private CustomBottomNavigationView customBottomNav;
     private LinearLayout productContainer;
+    private LinearLayout paginationContainer;
 
     // Repository
     private ProductRepository productRepository;
+
+    // Pagination
+    private CustomPagination pagination;
+    private List<Product> allProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +122,12 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             customBottomNav.setOnBottomNavigationItemClickListener(this);
         } else {
             Log.e("HomePageActivity", "CustomBottomNavigationView not found.");
+        }
+
+        // Lấy paginationContainer từ layout chính
+        paginationContainer = findViewById(R.id.paginationContainer);
+        if (paginationContainer == null) {
+            Log.e("HomePageActivity", "paginationContainer not found in layout");
         }
     }
 
@@ -173,7 +189,12 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
         productRepository.fetchLatestProducts(new ProductRepository.ProductCallback() {
             @Override
             public void onSuccess(List<Product> products) {
+                // Gán danh sách sản phẩm cho allProducts
+                HomePageActivity.this.allProducts = products;
+                // Hiển thị sản phẩm của trang đầu tiên
                 displayProducts(products);
+                // Khởi tạo phân trang
+                setupPagination();
             }
 
             @Override
@@ -181,6 +202,27 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
                 Toast.makeText(HomePageActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setupPagination() {
+        if (allProducts == null || allProducts.isEmpty()) {
+            return;
+        }
+
+        pagination = new CustomPagination(
+                this,
+                paginationContainer,
+                new ArrayList<>(allProducts),
+                ITEMS_PER_PAGE,
+                this
+        );
+        pagination.initialize();
+    }
+
+    @Override
+    public void onPageChanged(List<?> pageItems, int pageNumber) {
+        List<Product> products = (List<Product>) pageItems;
+        displayProducts(products);
     }
 
     private void displayProducts(List<Product> products) {

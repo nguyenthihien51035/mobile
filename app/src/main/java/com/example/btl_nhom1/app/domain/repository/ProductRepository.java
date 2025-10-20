@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class ProductRepository {
-    private static final String BASE_URL = "http://192.168.100.205/api/";
+    private static final String BASE_URL = "http://192.168.1.6/api/";
     private static final String API_LATEST = BASE_URL + "getlatest.php?action=latest";
 
     private final RequestQueue requestQueue;
