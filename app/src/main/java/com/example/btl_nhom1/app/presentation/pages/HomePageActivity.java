@@ -1,5 +1,6 @@
 package com.example.btl_nhom1.app.presentation.pages;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -283,7 +284,11 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
 
         // Load hình ảnh từ drawable
         String imageName = product.getPrimaryImageUrl();
-        int imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+        int imageResId = 0;
+
+        if (imageName != null && !imageName.isEmpty()) {
+            imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+        }
 
         if (imageResId != 0) {
             imgProduct.setImageResource(imageResId);
@@ -293,8 +298,10 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
 
         // Set click listener
         view.setOnClickListener(v -> {
-            Toast.makeText(HomePageActivity.this, "Clicked: " + product.getName(), Toast.LENGTH_SHORT).show();
-            // TODO: Mở trang chi tiết sản phẩm
+            Intent intent = new Intent(HomePageActivity.this, ProductDetailsActivity.class);
+            intent.putExtra("PRODUCT_ID", product.getId());
+            intent.putExtra("PRODUCT_NAME", product.getName());
+            startActivity(intent);
         });
 
         return view;

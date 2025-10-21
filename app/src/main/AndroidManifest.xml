@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Btl_nhom1">
         <activity
-            android:name=".app.presentation.pages.ContainerActivity"
+            android:name=".app.presentation.pages.HomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,7 @@
         </activity>
         <activity android:name=".app.presentation.pages.CartActivity" />
         <activity android:name=".app.presentation.pages.LoginActivity" />
-        <activity android:name=".app.presentation.pages.HomePageActivity" />
+        <activity android:name=".app.presentation.pages.ProductDetailsActivity" />
     </application>
 
 </manifest>
