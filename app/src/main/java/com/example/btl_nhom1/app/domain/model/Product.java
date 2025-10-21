@@ -23,6 +23,7 @@ public class Product {
     private boolean isDeleted;
     private String primaryImageUrl;
     private List<ProductImage> images;
+    private List<ProductSizes> sizes;
     private String sku;
     private String goldType;
     private String categoryName;
