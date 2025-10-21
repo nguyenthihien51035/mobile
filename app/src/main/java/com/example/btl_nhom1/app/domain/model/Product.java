@@ -28,5 +28,31 @@ public class Product {
     private String goldType;
     private String categoryName;
     private int soldQuantity;
+    private int totalQuantitySold;
     private String displayName;
+
+    public String getPrimaryImageUrl() {
+        if (primaryImageUrl != null && !primaryImageUrl.isEmpty()) {
+            return primaryImageUrl;
+        }
+
+        if (images != null && !images.isEmpty()) {
+            // Tìm ảnh primary
+            for (ProductImage img : images) {
+                if (img.isPrimary()) {
+                    return img.getImageUrl();
+                }
+            }
+            return images.get(0).getImageUrl();
+        }
+
+        return null;
+    }
+
+    public int getSoldQuantity() {
+        if (totalQuantitySold > 0) {
+            return totalQuantitySold;
+        }
+        return soldQuantity;
+    }
 }

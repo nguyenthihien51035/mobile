@@ -74,6 +74,7 @@
             <!-- Nội dung chính -->
             <!--Sản phẩm mới-->
             <include
+                android:id="@+id/includeLatest"
                 layout="@layout/fragment_latest_products"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -83,10 +84,17 @@
                 android:id="@+id/paginationContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:background="#ffffff"
                 android:gravity="center"
-                android:padding="16dp"
-                android:background="#ffffff" />
+                android:orientation="horizontal"
+                android:padding="16dp" />
+
+            <!-- ProductTopSelling -->
+            <include
+                android:id="@+id/includeTopSelling"
+                layout="@layout/fragment_top_selling_products"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <!-- Footer -->
             <include

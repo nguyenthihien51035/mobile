@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.CommingSoonActivity;

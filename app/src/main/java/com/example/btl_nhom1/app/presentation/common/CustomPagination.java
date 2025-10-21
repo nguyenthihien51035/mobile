@@ -26,10 +26,6 @@ public class CustomPagination {
     private int totalPages;
     private PaginationListener listener;
 
-    public interface PaginationListener {
-        void onPageChanged(List<?> pageItems, int pageNumber);
-    }
-
     public CustomPagination(Context context, LinearLayout paginationContainer, List<?> allItems, int itemsPerPage, PaginationListener listener) {
         this.context = context;
         this.paginationContainer = paginationContainer;
@@ -139,5 +135,9 @@ public class CustomPagination {
         calculateTotalPages();
         createPaginationButtons();
         loadPage(1);
+    }
+
+    public interface PaginationListener {
+        void onPageChanged(List<?> pageItems, int pageNumber);
     }
 }

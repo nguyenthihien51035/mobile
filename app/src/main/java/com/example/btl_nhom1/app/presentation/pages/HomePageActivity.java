@@ -59,6 +59,8 @@ public class HomePageActivity extends AppCompatActivity
     private CustomBottomNavigationView customBottomNav;
     private LinearLayout productContainer;
     private LinearLayout paginationContainer;
+    private LinearLayout latestProductContainer;
+    private LinearLayout topSellingProductContainer;
 
     // Repository
     private ProductRepository productRepository;
@@ -88,7 +90,8 @@ public class HomePageActivity extends AppCompatActivity
         setupSlider();
 
         // Gọi API để lấy danh sách sản phẩm
-        fetchProducts();
+        fetchLatestProducts();
+        fetchTopSellingProducts();
 
         // Xử lý nút BackCate
         setupBackPressHandler();
@@ -111,7 +114,11 @@ public class HomePageActivity extends AppCompatActivity
     }
 
     private void initViews() {
-        productContainer = findViewById(R.id.productContainer);
+        View latestInclude = findViewById(R.id.includeLatest);
+        View topSellingInclude = findViewById(R.id.includeTopSelling);
+
+        topSellingProductContainer = topSellingInclude.findViewById(R.id.productContainer);
+        latestProductContainer = latestInclude.findViewById(R.id.productContainer);
 
         // CustomCategoryDrawer
         customCategoryDrawer = findViewById(R.id.customCategoryDrawer);
@@ -185,14 +192,14 @@ public class HomePageActivity extends AppCompatActivity
     }
 
     // Call API thông qua Repository
-    private void fetchProducts() {
+    private void fetchLatestProducts() {
         productRepository.fetchLatestProducts(new ProductRepository.ProductCallback() {
             @Override
             public void onSuccess(List<Product> products) {
                 // Gán danh sách sản phẩm cho allProducts
                 HomePageActivity.this.allProducts = products;
                 // Hiển thị sản phẩm của trang đầu tiên
-                displayProducts(products);
+                displayProducts(products, latestProductContainer);
                 // Khởi tạo phân trang
                 setupPagination();
             }
@@ -200,6 +207,20 @@ public class HomePageActivity extends AppCompatActivity
             @Override
             public void onError(String errorMessage) {
                 Toast.makeText(HomePageActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchTopSellingProducts() {
+        productRepository.fetchTopSellingProducts(new ProductRepository.ProductCallback() {
+            @Override
+            public void onSuccess(List<Product> products) {
+                displayProducts(products, topSellingProductContainer);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(HomePageActivity.this, "Lỗi top selling: " + errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -222,13 +243,11 @@ public class HomePageActivity extends AppCompatActivity
     @Override
     public void onPageChanged(List<?> pageItems, int pageNumber) {
         List<Product> products = (List<Product>) pageItems;
-        displayProducts(products);
+        displayProducts(products, latestProductContainer);
     }
 
-    private void displayProducts(List<Product> products) {
-        // Xóa tất cả view cũ
-        productContainer.removeAllViews();
-
+    private void displayProducts(List<Product> products, LinearLayout container) {
+        container.removeAllViews();
         // Tạo các hàng, mỗi hàng chứa 2 sản phẩm
         for (int i = 0; i < products.size(); i += 2) {
             LinearLayout row = createProductRow();
@@ -253,7 +272,7 @@ public class HomePageActivity extends AppCompatActivity
                 row.addView(emptyView);
             }
 
-            productContainer.addView(row);
+            container.addView(row);
         }
     }
 

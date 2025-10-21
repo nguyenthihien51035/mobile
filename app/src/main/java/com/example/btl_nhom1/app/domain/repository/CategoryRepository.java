@@ -20,7 +20,7 @@ import okhttp3.Response;
 public class CategoryRepository {
     private static final String TAG = "CategoryRepository";
 
-    private static final String BASE_URL = "http://192.168.1.6/api/";
+    private static final String BASE_URL = "http://192.168.100.205/api/";
     private static final String API_LATEST = BASE_URL + "catetree.php";
 
     private final OkHttpClient client;
