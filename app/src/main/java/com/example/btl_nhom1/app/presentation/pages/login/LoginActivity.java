@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.pages;
+package com.example.btl_nhom1.app.presentation.pages.login;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.btl_nhom1.R;
+import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
 
 public class LoginActivity extends AppCompatActivity {
     Context context;

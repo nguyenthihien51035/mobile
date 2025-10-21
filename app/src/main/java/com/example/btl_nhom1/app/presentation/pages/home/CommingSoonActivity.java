@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.pages;
+package com.example.btl_nhom1.app.presentation.pages.home;
 
 import android.content.Context;
 import android.content.Intent;

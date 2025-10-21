@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".app.presentation.pages.HomePageActivity">
+    tools:context=".app.presentation.pages.home.HomePageActivity">
 
     <!-- Header -->
     <com.example.btl_nhom1.app.presentation.common.CustomHeaderView

@@ -15,19 +15,22 @@
         android:theme="@style/Theme.Btl_nhom1"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".app.presentation.pages.ProductDetailsActivity"
+            android:name=".app.presentation.pages.containers.ContainerActivity"
             android:exported="false" />
         <activity
-            android:name=".app.presentation.pages.CommingSoonActivity"
+            android:name=".app.presentation.pages.details.ProductDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".app.presentation.pages.LoginActivity"
+            android:name=".app.presentation.pages.home.CommingSoonActivity"
             android:exported="false" />
         <activity
-            android:name=".app.presentation.pages.CartActivity"
+            android:name=".app.presentation.pages.login.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".app.presentation.pages.HomePageActivity"
+            android:name=".app.presentation.pages.cart.CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".app.presentation.pages.home.HomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

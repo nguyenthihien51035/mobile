@@ -3,9 +3,9 @@
     android:id="@+id/searchResultsLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:orientation="vertical">
     <!--    android:visibility="gone"> &lt;!&ndash; Ban đầu ẩn đi &ndash;&gt;-->
 
     <!-- Ví dụ cho ảnh số 2 (khi click vào search bar) -->
@@ -20,9 +20,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tìm kiếm gần đây"
-            android:textStyle="bold"
+            android:textColor="@android:color/darker_gray"
             android:textSize="16sp"
-            android:textColor="@android:color/darker_gray" />
+            android:textStyle="bold" />
 
         <!-- Ví dụ các item tìm kiếm gần đây -->
         <TextView
@@ -76,9 +76,9 @@
         android:id="@+id/tvNoResults"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Không tìm thấy sản phẩm nào."
         android:gravity="center"
         android:padding="16dp"
+        android:text="Không tìm thấy sản phẩm nào."
         android:visibility="gone" />
 
 </LinearLayout>

@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.presentation.pages.CommingSoonActivity;
-import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
-import com.example.btl_nhom1.app.presentation.pages.LoginActivity;
+import com.example.btl_nhom1.app.presentation.pages.home.CommingSoonActivity;
+import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
     private OnBottomNavigationItemClickListener listener;

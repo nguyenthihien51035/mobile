@@ -1,5 +1,7 @@
 package com.example.btl_nhom1.app.domain.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class Product {
+    @SerializedName(value = "id", alternate = {"productId"})
     private int id;
     private String name;
     private double price;
@@ -24,6 +27,7 @@ public class Product {
     private boolean isDeleted;
     private String primaryImageUrl;
     private List<ProductImage> images;
+    private List<ProductSizes> sizes;
     private String sku;
     private String goldType;
     private String categoryName;

@@ -10,8 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.presentation.pages.CartActivity;
-import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.cart.CartActivity;
+import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
 
 public class CustomHeaderView extends LinearLayout {
     public CustomHeaderView(Context context) {
