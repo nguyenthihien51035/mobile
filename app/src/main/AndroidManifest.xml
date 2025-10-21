@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Btl_nhom1">
         <activity
-            android:name=".app.presentation.pages.HomePageActivity"
+            android:name=".app.presentation.pages.home.HomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,9 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".app.presentation.pages.CartActivity" />
-        <activity android:name=".app.presentation.pages.LoginActivity" />
-        <activity android:name=".app.presentation.pages.ProductDetailsActivity" />
+        <activity android:name=".app.presentation.pages.cart.CartActivity" />
+        <activity android:name=".app.presentation.pages.login.LoginActivity" />
+        <activity android:name=".app.presentation.pages.details.ProductDetailsActivity" />
+        <activity android:name=".app.presentation.pages.containers.ContainerActivity" />
     </application>
 
 </manifest>

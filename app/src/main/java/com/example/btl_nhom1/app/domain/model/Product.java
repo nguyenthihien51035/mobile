@@ -1,5 +1,7 @@
 package com.example.btl_nhom1.app.domain.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
+    // alternate có thể map nhiều tên khác nhau từ JSON
+    @SerializedName(value = "id", alternate = {"productId"})
     private int id;
     private String name;
     private double price;
