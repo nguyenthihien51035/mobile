@@ -8,20 +8,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:contentDescription="Product Image"
         android:scaleType="centerCrop"
-        android:src="@drawable/topselling"
-        android:contentDescription="Product Image" />
+        android:src="@drawable/topselling" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sản phẩm bán chạy nhất"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="#003468"
         android:gravity="center"
         android:paddingTop="16dp"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        android:text="Sản phẩm bán chạy nhất"
+        android:textColor="#003468"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:id="@+id/productContainer"

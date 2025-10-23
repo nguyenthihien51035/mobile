@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.pages;
+package com.example.btl_nhom1.app.presentation.pages.home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
 import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
 import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
+import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivity;
 
 import java.text.NumberFormat;
 import java.util.Arrays;

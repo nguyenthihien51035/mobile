@@ -1,10 +1,6 @@
-package com.example.btl_nhom1.app.presentation.pages;
+package com.example.btl_nhom1.app.presentation.pages.cart;
 
-
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,26 +10,17 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.btl_nhom1.R;
 
-public class LoginActivity extends AppCompatActivity {
-    Context context;
+public class CartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_cart);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
-        });
-
-
-        ImageView imgLogo = findViewById(R.id.ivLogo);
-        imgLogo.setOnClickListener(v -> {
-            Intent intent = new Intent(context, HomePageActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            context.startActivity(intent);
         });
     }
 }

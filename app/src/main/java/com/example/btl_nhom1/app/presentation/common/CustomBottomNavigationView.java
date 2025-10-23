@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.presentation.pages.HomePageActivity;
-import com.example.btl_nhom1.app.presentation.pages.LoginActivity;
+import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
     // Interface để giao tiếp với Activity chứa nó, ví dụ để mở Category Drawer

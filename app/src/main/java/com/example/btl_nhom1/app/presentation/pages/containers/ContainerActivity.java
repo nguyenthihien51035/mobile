@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.pages;
+package com.example.btl_nhom1.app.presentation.pages.containers;
 
 import android.content.Context;
 import android.os.Bundle;
