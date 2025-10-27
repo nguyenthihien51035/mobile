@@ -28,6 +28,7 @@
                 android:layout_marginBottom="28dp">
 
                 <TextView
+                    android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
@@ -55,18 +56,22 @@
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_option_selected"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
-                <View
+                <ImageView
+                    android:id="@+id/radio1"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/ic_radio_selected" />
+                    android:src="@drawable/ic_radio_selector"
+                    android:contentDescription="radio1" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingStart="5dp"
+                    android:paddingStart="8dp"
                     android:text="Sản phẩm mới nhất"
                     android:textColor="#334155"
                     android:textSize="15sp" />
@@ -80,18 +85,22 @@
                 android:layout_marginBottom="12dp"
                 android:background="@drawable/bg_option_normal"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
-                <View
+                <ImageView
+                    android:id="@+id/radio2"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/ic_radio_selected" />
+                    android:background="@drawable/ic_radio_selector"
+                    android:contentDescription="radio2" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingStart="5dp"
+                    android:paddingStart="8dp"
                     android:text="Giá từ cao đến thấp"
                     android:textColor="#334155"
                     android:textSize="15sp" />
@@ -105,18 +114,22 @@
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/bg_option_normal"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:clickable="true"
+                android:focusable="true">
 
-                <View
+                <ImageView
+                    android:id="@+id/radio3"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:background="@drawable/ic_radio_selected" />
+                    android:background="@drawable/ic_radio_selector"
+                    android:contentDescription="radio3" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingStart="5dp"
+                    android:paddingStart="8dp"
                     android:text="Giá từ thấp đến cao"
                     android:textColor="#334155"
                     android:textSize="15sp" />

@@ -86,6 +86,16 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
 
         // Xử lý nút BackCate
         setupBackPressHandler();
+
+        checkLoginIntent();
+    }
+
+    private void checkLoginIntent() {
+        if (getIntent() != null && getIntent().getBooleanExtra("refresh_user", false)) {
+            if (customBottomNav != null) {
+                customBottomNav.updateUserName();
+            }
+        }
     }
 
     private void setupBackPressHandler() {
@@ -165,6 +175,10 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
     protected void onResume() {
         super.onResume();
         handler.postDelayed(sliderRunnable, SLIDE_DELAY_MS);
+
+        if (customBottomNav != null) {
+            customBottomNav.updateUserName();
+        }
     }
 
     @Override

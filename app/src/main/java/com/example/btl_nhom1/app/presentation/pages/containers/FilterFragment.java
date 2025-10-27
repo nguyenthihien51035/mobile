@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,11 @@ public class FilterFragment extends Fragment {
 
     private ImageView btnClose;
     private TextView btnReset, btnApply;
+    private RelativeLayout ageDropdown, priceDropdown;
+    private TextView ageSelectedText, priceSelectedText;
+
+    private String selectedAge = "";
+    private String selectedPriceRange = "";
 
     @Nullable
     @Override
@@ -28,6 +35,14 @@ public class FilterFragment extends Fragment {
         btnReset = view.findViewById(R.id.btnReset);
         btnApply = view.findViewById(R.id.btnApply);
 
+        // Khởi tạo dropdown containers
+        ageDropdown = view.findViewById(R.id.ageDropdown);
+        priceDropdown = view.findViewById(R.id.priceDropdown);
+
+        // Khởi tạo text hiển thị
+        ageSelectedText = view.findViewById(R.id.ageSelectedText);
+        priceSelectedText = view.findViewById(R.id.priceSelectedText);
+
         // Set click listener cho nút đóng
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,11 +51,26 @@ public class FilterFragment extends Fragment {
             }
         });
 
+        // Set click listener cho dropdown tuổi vàng
+        ageDropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAgeDropdown(v);
+            }
+        });
+
+        // Set click listener cho dropdown giá
+        priceDropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPriceDropdown(v);
+            }
+        });
+
         // Set click listener cho nút Đặt lại
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Xử lý đặt lại bộ lọc
                 resetFilters();
             }
         });
@@ -49,12 +79,51 @@ public class FilterFragment extends Fragment {
         btnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Xử lý áp dụng bộ lọc
                 applyFilters();
             }
         });
 
         return view;
+    }
+
+    private void showAgeDropdown(View anchor) {
+        PopupMenu popup = new PopupMenu(getContext(), anchor);
+
+        // Thêm các options cho tuổi vàng
+        popup.getMenu().add("0-3 tháng");
+        popup.getMenu().add("3-6 tháng");
+        popup.getMenu().add("6-12 tháng");
+        popup.getMenu().add("1-2 tuổi");
+        popup.getMenu().add("Trên 2 tuổi");
+
+        popup.setOnMenuItemClickListener(item -> {
+            selectedAge = item.getTitle().toString();
+            ageSelectedText.setText(selectedAge);
+            ageSelectedText.setTextColor(getResources().getColor(android.R.color.black));
+            return true;
+        });
+
+        popup.show();
+    }
+
+    private void showPriceDropdown(View anchor) {
+        PopupMenu popup = new PopupMenu(getContext(), anchor);
+
+        // Thêm các options cho khoảng giá
+        popup.getMenu().add("Dưới 500,000đ");
+        popup.getMenu().add("500,000đ - 1,000,000đ");
+        popup.getMenu().add("1,000,000đ - 2,000,000đ");
+        popup.getMenu().add("2,000,000đ - 5,000,000đ");
+        popup.getMenu().add("Trên 5,000,000đ");
+
+        popup.setOnMenuItemClickListener(item -> {
+            selectedPriceRange = item.getTitle().toString();
+            priceSelectedText.setText(selectedPriceRange);
+            priceSelectedText.setTextColor(getResources().getColor(android.R.color.black));
+            return true;
+        });
+
+        popup.show();
     }
 
     private void closeFragment() {
@@ -64,13 +133,22 @@ public class FilterFragment extends Fragment {
     }
 
     private void resetFilters() {
-        // Logic để reset các bộ lọc về mặc định
-        // TODO: Implement reset logic
+        // Reset về trạng thái mặc định
+        selectedAge = "";
+        selectedPriceRange = "";
+
+        ageSelectedText.setText("Chọn tuổi vàng");
+        ageSelectedText.setTextColor(getResources().getColor(android.R.color.white));
+
+        priceSelectedText.setText("Chọn khoảng giá");
+        priceSelectedText.setTextColor(getResources().getColor(android.R.color.white));
     }
 
     private void applyFilters() {
-        // Logic để áp dụng bộ lọc và đóng fragment
-        // TODO: Implement apply logic
+        // Logic để áp dụng bộ lọc
+        // TODO: Gửi selectedAge và selectedPriceRange về activity/fragment cha
+        // Có thể dùng Interface callback hoặc ViewModel
+
         closeFragment();
     }
 }

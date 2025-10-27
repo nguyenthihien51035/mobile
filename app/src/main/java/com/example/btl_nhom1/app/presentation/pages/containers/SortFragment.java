@@ -91,16 +91,24 @@ public class SortFragment extends Fragment {
         option2.setBackgroundResource(R.drawable.bg_option_normal);
         option3.setBackgroundResource(R.drawable.bg_option_normal);
 
-        // Set background cho option được chọn
+        // Reset trạng thái selected của radio buttons
+        option1.findViewById(R.id.radio1).setSelected(false);
+        option2.findViewById(R.id.radio2).setSelected(false);
+        option3.findViewById(R.id.radio3).setSelected(false);
+
+        // Set background và selected state cho option được chọn
         switch (option) {
             case 1:
                 option1.setBackgroundResource(R.drawable.bg_option_selected);
+                option1.findViewById(R.id.radio1).setSelected(true);
                 break;
             case 2:
                 option2.setBackgroundResource(R.drawable.bg_option_selected);
+                option2.findViewById(R.id.radio2).setSelected(true);
                 break;
             case 3:
                 option3.setBackgroundResource(R.drawable.bg_option_selected);
+                option3.findViewById(R.id.radio3).setSelected(true);
                 break;
         }
     }

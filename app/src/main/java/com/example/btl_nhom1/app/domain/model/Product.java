@@ -2,6 +2,7 @@ package com.example.btl_nhom1.app.domain.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -58,5 +59,10 @@ public class Product {
             return totalQuantitySold;
         }
         return soldQuantity;
+    }
+
+    public String getFormattedPrice() {
+        DecimalFormat df = new DecimalFormat("#,###");
+        return df.format(price) + "₫";
     }
 }
