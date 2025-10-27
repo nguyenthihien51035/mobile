@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -39,7 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ContainerActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
+public class ContainerActivity extends AppCompatActivity
+        implements
+        CustomBottomNavigationView.OnBottomNavigationItemClickListener,
+        SortFragment.OnSortAppliedListener,
+        FilterFragment.OnFilterAppliedListener {
     private final int pageSize = 6;
     private CustomCategoryDrawer customCategoryDrawer;
     private CustomBottomNavigationView customBottomNav;
@@ -57,6 +62,11 @@ public class ContainerActivity extends AppCompatActivity implements CustomBottom
     private int currentPage = 0;
     private int totalPages = 1;
     private List<Product> allProducts = new ArrayList<>();
+    private String currentSortBy = null;
+    private String currentSortDirection = null;
+    private String currentGoldType = null;
+    private Integer currentFromPrice = null;
+    private Integer currentToPrice = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +118,62 @@ public class ContainerActivity extends AppCompatActivity implements CustomBottom
 
         btnFilter.setOnClickListener(v -> openFragment(new FilterFragment()));
         btnSort.setOnClickListener(v -> openFragment(new SortFragment()));
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    // Nếu không còn fragment nào, kết thúc Activity
+                    finish();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onSortApplied(String sortBy, String sortDirection) {
+        currentSortBy = sortBy;
+        currentSortDirection = sortDirection;
+
+        Log.i("ContainerActivity", "Sort applied: " + sortBy + " - " + sortDirection);
+
+        loadProductsByCategory(categoryId, 0);
+    }
+
+    @Override
+    public void onSortReset() {
+        currentSortBy = null;
+        currentSortDirection = null;
+
+        Log.i("ContainerActivity", "Sort reset");
+
+        loadProductsByCategory(categoryId, 0);
+    }
+
+    @Override
+    public void onFilterApplied(String goldType, Integer fromPrice, Integer toPrice) {
+        currentGoldType = goldType;
+        currentFromPrice = fromPrice;
+        currentToPrice = toPrice;
+
+        Log.i("ContainerActivity", "Filter applied:");
+        Log.i("ContainerActivity", "Gold type: " + goldType);
+        Log.i("ContainerActivity", "Price: " + fromPrice + " - " + toPrice);
+
+        loadProductsByCategory(categoryId, 0);
+    }
+
+    @Override
+    public void onFilterReset() {
+        currentGoldType = null;
+        currentFromPrice = null;
+        currentToPrice = null;
+
+        Log.i("ContainerActivity", "Filter reset");
+
+        loadProductsByCategory(categoryId, 0);
     }
 
     private void initViews() {
@@ -165,37 +231,59 @@ public class ContainerActivity extends AppCompatActivity implements CustomBottom
     private void loadProductsByCategory(int id, int pageNumber) {
         Log.i("ProductLoad", "Đang tải trang " + (pageNumber + 1) + "...");
 
-        repository.getProductsByCategory(id, pageNumber, pageSize, new ProductRepository.ProductPageCallback() {
-            @Override
-            public void onSuccess(ProductPageResponse response) {
-                allProducts = response.getContent();
-                totalPages = response.getTotalPages();
-                currentPage = pageNumber;
+        // Log filter info nếu có
+        if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
+            Log.i("ProductLoad", "Filters:");
+            if (currentGoldType != null) {
+                Log.i("ProductLoad", "  • Gold type: " + currentGoldType);
+            }
+            if (currentFromPrice != null) {
+                Log.i("ProductLoad", "  • Price: " + currentFromPrice + " - " + currentToPrice);
+            }
+            if (currentSortBy != null) {
+                Log.i("ProductLoad", "  • Sort: " + currentSortBy + " " + currentSortDirection);
+            }
+        }
 
-                Log.i("ProductLoad", "Tải thành công " + allProducts.size() + " sản phẩm");
-                Log.i("ProductLoad", "Trang " + (pageNumber + 1) + "/" + totalPages);
+        repository.getFilteredProducts(
+                id,
+                pageNumber,
+                pageSize,
+                currentGoldType,
+                currentFromPrice,
+                currentToPrice,
+                currentSortBy,
+                currentSortDirection,
+                new ProductRepository.ProductPageCallback() {
+                    @Override
+                    public void onSuccess(ProductPageResponse response) {
+                        allProducts = response.getContent();
+                        totalPages = response.getTotalPages();
+                        currentPage = pageNumber;
 
-                for (Product p : allProducts) {
-                    Log.d("ProductLoad", "  • " + p.getName() + " - " + p.getPrice() + "₫");
-                }
+                        Log.i("ProductLoad", "Tải thành công " + allProducts.size() + " sản phẩm");
+                        Log.i("ProductLoad", "Trang " + (pageNumber + 1) + "/" + totalPages);
 
-                runOnUiThread(() -> {
-                    displayProducts(allProducts, productContainer);
+                        runOnUiThread(() -> {
+                            displayProducts(allProducts, productContainer);
+                            createPaginationButtons();
 
-                    createPaginationButtons();
+                            String info = "Trang " + (pageNumber + 1) + "/" + totalPages;
+                            if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
+                                info += " (Đã lọc/sắp xếp)";
+                            }
+                            Toast.makeText(context, info, Toast.LENGTH_SHORT).show();
+                        });
+                    }
 
-                    Toast.makeText(context, "Trang " + (pageNumber + 1) + "/" + totalPages, Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onError(String errorMessage) {
+                        Log.e("ProductLoad", "Lỗi tải sản phẩm: " + errorMessage);
+                        runOnUiThread(() ->
+                                Toast.makeText(context, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show()
+                        );
+                    }
                 });
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e("ProductLoad", "Lỗi tải sản phẩm: " + errorMessage);
-                runOnUiThread(() ->
-                        Toast.makeText(context, "Lỗi: " + errorMessage, Toast.LENGTH_LONG).show()
-                );
-            }
-        });
     }
 
     private void createPaginationButtons() {
@@ -433,15 +521,6 @@ public class ContainerActivity extends AppCompatActivity implements CustomBottom
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override

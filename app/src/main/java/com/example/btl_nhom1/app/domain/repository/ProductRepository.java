@@ -22,6 +22,7 @@ public class ProductRepository {
     private static final String API_TOP_SELLING = BASE_URL + "getTopSellingProducts.php?action=top-selling";
     private static final String API_PRODUCT_DETAILS = BASE_URL + "getProductDetails.php?id=";
     private static final String API_FILTER = BASE_URL + "getFilteredProducts.php";
+    private static final String API_GOLD_TYPES = BASE_URL + "getAllGoldTypes.php?action=goldTypes";
     private final RequestQueue requestQueue;
     private final Context context;
     private final Gson gson;
@@ -124,12 +125,74 @@ public class ProductRepository {
         requestQueue.add(stringRequest);
     }
 
-    public void getProductsByCategory(int categoryId, int pageNumber, int pageSize, ProductPageCallback callback) {
-        String url = API_FILTER +
-                "?action=filterByCategory" +
-                "&id=" + categoryId +
-                "&pageSize=" + pageSize +
-                "&pageNumber=" + pageNumber;
+    public void fetchGoldTypes(GoldTypesCallback callback) {
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                API_GOLD_TYPES,
+                response -> {
+                    try {
+                        Log.d("ProductRepository", "GoldTypes Response: " + response);
+
+                        Type responseType = new TypeToken<ApiResponse<List<String>>>() {
+                        }.getType();
+                        ApiResponse<List<String>> apiResponse = gson.fromJson(response, responseType);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData());
+                        } else {
+                            callback.onError("Không có dữ liệu loại vàng");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+                }
+        );
+
+        requestQueue.add(stringRequest);
+    }
+
+    public void getFilteredProducts(
+            int categoryId,
+            int pageNumber,
+            int pageSize,
+            String goldType,
+            Integer fromPrice,
+            Integer toPrice,
+            String sortBy,
+            String sortDirection,
+            ProductPageCallback callback) {
+        StringBuilder urlBuilder = new StringBuilder(API_FILTER);
+        urlBuilder.append("?action=filterByCategory");
+        urlBuilder.append("&id=").append(categoryId);
+        urlBuilder.append("&pageSize=").append(pageSize);
+        urlBuilder.append("&pageNumber=").append(pageNumber);
+
+        // Filter params
+        if (goldType != null && !goldType.isEmpty()) {
+            urlBuilder.append("&goldType=").append(goldType);
+        }
+        if (fromPrice != null) {
+            urlBuilder.append("&fromPrice=").append(fromPrice);
+        }
+        if (toPrice != null) {
+            urlBuilder.append("&toPrice=").append(toPrice);
+        }
+
+        // Sort params
+        if (sortBy != null && !sortBy.isEmpty()) {
+            urlBuilder.append("&sortBy=").append(sortBy);
+        }
+        if (sortDirection != null && !sortDirection.isEmpty()) {
+            urlBuilder.append("&sortDirection=").append(sortDirection);
+        }
+
+        String url = urlBuilder.toString();
+        Log.i("ProductRepository", "📡 Filtered API: " + url);
 
         StringRequest stringRequest = new StringRequest(
                 Request.Method.GET,
@@ -143,7 +206,7 @@ public class ProductRepository {
                         ApiResponse<ProductPageResponse> apiResponse = gson.fromJson(response, responseType);
 
                         if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData()); // Trả về cả ProductPageResponse
+                            callback.onSuccess(apiResponse.getData());
                         } else {
                             callback.onError("Không có dữ liệu");
                         }
@@ -160,6 +223,7 @@ public class ProductRepository {
 
         requestQueue.add(stringRequest);
     }
+
 
     public void cancelAllRequests() {
         if (requestQueue != null) {
@@ -184,6 +248,12 @@ public class ProductRepository {
 
     public interface ProductPageCallback {
         void onSuccess(ProductPageResponse response);
+
+        void onError(String errorMessage);
+    }
+
+    public interface GoldTypesCallback {
+        void onSuccess(List<String> goldTypes);
 
         void onError(String errorMessage);
     }
