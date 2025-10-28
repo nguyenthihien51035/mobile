@@ -59,17 +59,22 @@
 
             <!-- Tuổi vàng Dropdown -->
             <RelativeLayout
+                android:id="@+id/goldTypeDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginBottom="24dp"
-                android:background="@drawable/bg_dropdown">
+                android:background="@drawable/bg_dropdown"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
+                    android:id="@+id/goldTypeSelectedText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="40dp"
                     android:text="Chọn tuổi vàng"
                     android:textColor="#64748B"
                     android:textSize="15sp" />
@@ -95,17 +100,22 @@
 
             <!-- Giá Dropdown -->
             <RelativeLayout
+                android:id="@+id/priceDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginBottom="32dp"
-                android:background="@drawable/bg_dropdown">
+                android:background="@drawable/bg_dropdown"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
+                    android:id="@+id/priceSelectedText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="40dp"
                     android:text="Chọn khoảng giá"
                     android:textColor="#64748B"
                     android:textSize="15sp" />

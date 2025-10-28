@@ -1,5 +1,6 @@
 package com.example.btl_nhom1.app.presentation.pages.search;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.content.Intent;
@@ -7,7 +8,10 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,12 +30,14 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Product;
 import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SearchAdapter;
+import com.example.btl_nhom1.app.presentation.pages.containers.ContainerActivity;
 import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivity;
 
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
+    private int firstProductCategoryId = -1;
     private static final long SEARCH_DELAY = 500; // 0.5 giây debounce
 
     private EditText searchEditText;
@@ -127,6 +133,56 @@ public class SearchActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+
+        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
+
+                String keyword = searchEditText.getText().toString().trim();
+                if (!keyword.isEmpty()) {
+                    // Chuyển sang FilterActivity với keyword
+                    navigateToFilter(keyword);
+                }
+                return true;
+            }
+            return false;
+        });
+    }
+
+    //    private void navigateToFilter(String keyword) {
+//        // Ẩn bàn phím
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+//
+//        // Chuyển sang ContainerActivity với keyword
+//        Intent intent = new Intent(SearchActivity.this, ContainerActivity.class);
+//        intent.putExtra("search_keyword", keyword);
+//        intent.putExtra("categoryId", -1); // -1 = tìm kiếm tất cả danh mục
+//        intent.putExtra("categoryName", "Kết quả tìm kiếm: " + keyword);
+//        intent.putExtra("bannerUrl", ""); // Không cần banner
+//        startActivity(intent);
+//
+//        // Đóng SearchActivity
+//        finish();
+//    }
+    private void navigateToFilter(String keyword) {
+        // Ẩn bàn phím
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+
+        // Sử dụng categoryId đã lưu (mặc định -1 nếu chưa tìm)
+        int categoryId = firstProductCategoryId != -1 ? firstProductCategoryId : -1;
+
+        Intent intent = new Intent(SearchActivity.this, ContainerActivity.class);
+        intent.putExtra("search_keyword", keyword);
+        intent.putExtra("categoryId", categoryId); // ← DÙNG CATEGORY_ID ĐÃ LƯU
+        intent.putExtra("categoryName", "Kết quả tìm kiếm: " + keyword);
+        intent.putExtra("bannerUrl", "");
+
+        Log.d(TAG, "Navigate with categoryId: " + categoryId + ", keyword: " + keyword);
+
+        startActivity(intent);
+        finish();
     }
 
     private void performSearch(String keyword) {
@@ -141,7 +197,11 @@ public class SearchActivity extends AppCompatActivity {
 
                 if (products == null || products.isEmpty()) {
                     showNoResults();
+                    firstProductCategoryId = -1;
                 } else {
+                    // ← LẤY CATEGORY_ID CỦA SẢN PHẨM ĐẦU TIÊN
+                    firstProductCategoryId = products.get(0).getCategoryId();
+                    Log.d(TAG, "First product category ID: " + firstProductCategoryId);
                     showResults(products);
                 }
             }

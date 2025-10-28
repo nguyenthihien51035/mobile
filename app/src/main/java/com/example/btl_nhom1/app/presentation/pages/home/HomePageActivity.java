@@ -97,6 +97,16 @@ public class HomePageActivity extends AppCompatActivity
 
         // Xử lý nút BackCate
         setupBackPressHandler();
+
+        checkLoginIntent();
+    }
+
+    private void checkLoginIntent() {
+        if (getIntent() != null && getIntent().getBooleanExtra("refresh_user", false)) {
+            if (customBottomNav != null) {
+                customBottomNav.updateUserName();
+            }
+        }
     }
 
     private void setupBackPressHandler() {
@@ -183,6 +193,10 @@ public class HomePageActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         handler.postDelayed(sliderRunnable, SLIDE_DELAY_MS);
+
+        if (customBottomNav != null) {
+            customBottomNav.updateUserName();
+        }
     }
 
     @Override
@@ -335,7 +349,7 @@ public class HomePageActivity extends AppCompatActivity
         if (imageName != null && !imageName.isEmpty()) {
             imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
         }
-        
+
         if (imageResId != 0) {
             imgProduct.setImageResource(imageResId);
         } else {

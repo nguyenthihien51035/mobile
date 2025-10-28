@@ -45,7 +45,7 @@ public class CustomHeaderView extends LinearLayout {
         ImageView imgCart = findViewById(R.id.imgCart);
         EditText edtSearch = findViewById(R.id.edtSearch);
 
-        // 👉 Click logo → quay về trang chủ
+        // Click logo → quay về trang chủ
         imgLogo.setOnClickListener(v -> {
             Intent intent = new Intent(context, HomePageActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

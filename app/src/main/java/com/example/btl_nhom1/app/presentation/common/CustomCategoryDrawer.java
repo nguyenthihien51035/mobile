@@ -93,7 +93,6 @@ public class CustomCategoryDrawer extends RelativeLayout {
                         progressBar.setVisibility(View.GONE);
                     }
                     adapter.updateCategories(categories);
-                    Toast.makeText(getContext(), "Đã tải " + categories.size() + " danh mục", Toast.LENGTH_SHORT).show();
                 });
             }
 
