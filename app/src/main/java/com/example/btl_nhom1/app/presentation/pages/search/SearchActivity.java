@@ -27,17 +27,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btl_nhom1.R;
+import com.example.btl_nhom1.app.domain.model.Category;
 import com.example.btl_nhom1.app.domain.model.Product;
 import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SearchAdapter;
 import com.example.btl_nhom1.app.presentation.pages.containers.ContainerActivity;
 import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private int firstProductCategoryId = -1;
+    private List<Category> allCategories = new ArrayList<>();
     private static final long SEARCH_DELAY = 500; // 0.5 giây debounce
 
     private EditText searchEditText;
@@ -65,8 +68,89 @@ public class SearchActivity extends AppCompatActivity {
         repository = new ProductRepository(this);
         searchHandler = new Handler(Looper.getMainLooper());
 
+        loadCategories();
+
         // Focus vào ô tìm kiếm và hiện bàn phím
         searchEditText.requestFocus();
+    }
+
+    private void loadCategories() {
+        repository.fetchCategoryTree(new ProductRepository.CategoriesCallback() {
+            @Override
+            public void onSuccess(List<Category> categories) {
+                // Flatten tree thành list phẳng
+                allCategories = flattenCategories(categories);
+
+                Log.d(TAG, "Loaded " + allCategories.size() + " categories");
+
+                // Log để debug
+                for (Category cat : allCategories) {
+                    Log.d(TAG, "Category: " + cat.getName() + " (ID: " + cat.getId() + ", Banner: " + cat.getBannerUrl() + ")");
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e(TAG, "Error loading categories: " + errorMessage);
+                allCategories = new ArrayList<>();
+            }
+        });
+    }
+
+    private List<Category> flattenCategories(List<Category> categories) {
+        List<Category> flatList = new ArrayList<>();
+
+        for (Category category : categories) {
+            flatList.add(category);
+
+            // Đệ quy thêm children
+            if (category.getChildren() != null && !category.getChildren().isEmpty()) {
+                flatList.addAll(flattenCategories(category.getChildren()));
+            }
+        }
+
+        return flatList;
+    }
+
+    private int findCategoryIdByName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty() || allCategories.isEmpty()) {
+            return -1;
+        }
+
+        String normalizedKeyword = removeVietnameseTones(keyword.trim().toLowerCase());
+
+        // Bước 1: Tìm trùng chính xác (không dấu)
+        for (Category category : allCategories) {
+            String categoryName = removeVietnameseTones(category.getName().toLowerCase());
+
+            if (categoryName.equals(normalizedKeyword)) {
+                Log.d(TAG, "✓ Exact match: " + category.getName() + " (ID: " + category.getId() + ")");
+                return category.getId();
+            }
+        }
+
+        // Bước 2: Tìm chứa keyword
+        for (Category category : allCategories) {
+            String categoryName = removeVietnameseTones(category.getName().toLowerCase());
+
+            if (categoryName.contains(normalizedKeyword)) {
+                Log.d(TAG, "✓ Contains match: " + category.getName() + " (ID: " + category.getId() + ")");
+                return category.getId();
+            }
+        }
+
+        // Bước 3: Tìm keyword chứa categoryName (ví dụ: "nhẫn vàng" chứa "nhẫn")
+        for (Category category : allCategories) {
+            String categoryName = removeVietnameseTones(category.getName().toLowerCase());
+
+            if (normalizedKeyword.contains(categoryName)) {
+                Log.d(TAG, "✓ Keyword contains category: " + category.getName() + " (ID: " + category.getId() + ")");
+                return category.getId();
+            }
+        }
+
+        Log.d(TAG, "✗ No match found for: " + keyword);
+        return -1;
     }
 
     private void initViews() {
@@ -166,23 +250,57 @@ public class SearchActivity extends AppCompatActivity {
 //        finish();
 //    }
     private void navigateToFilter(String keyword) {
-        // Ẩn bàn phím
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
 
-        // Sử dụng categoryId đã lưu (mặc định -1 nếu chưa tìm)
-        int categoryId = firstProductCategoryId != -1 ? firstProductCategoryId : -1;
+        // ← TÌM CATEGORY_ID TỪ KEYWORD
+        int categoryId = findCategoryIdByName(keyword);
+
+        // Nếu không tìm thấy category, thử lấy từ sản phẩm đầu tiên
+        if (categoryId == -1 && firstProductCategoryId != -1) {
+            categoryId = firstProductCategoryId;
+            Log.d(TAG, "Use category from first product: " + categoryId);
+        }
+
+        Log.d(TAG, "=== NAVIGATE TO FILTER ===");
+        Log.d(TAG, "Keyword: " + keyword);
+        Log.d(TAG, "Category ID: " + categoryId);
 
         Intent intent = new Intent(SearchActivity.this, ContainerActivity.class);
         intent.putExtra("search_keyword", keyword);
-        intent.putExtra("categoryId", categoryId); // ← DÙNG CATEGORY_ID ĐÃ LƯU
-        intent.putExtra("categoryName", "Kết quả tìm kiếm: " + keyword);
-        intent.putExtra("bannerUrl", "");
+        intent.putExtra("categoryId", categoryId);
 
-        Log.d(TAG, "Navigate with categoryId: " + categoryId + ", keyword: " + keyword);
+        // Set categoryName phù hợp
+        String categoryName = categoryId != -1 ? getCategoryNameById(categoryId) : null;
+        if (categoryName != null) {
+            intent.putExtra("categoryName", categoryName);
+            intent.putExtra("bannerUrl", getBannerByCategoryId(categoryId));
+        } else {
+            intent.putExtra("categoryName", "Kết quả tìm kiếm: " + keyword);
+            intent.putExtra("bannerUrl", "");
+        }
 
         startActivity(intent);
         finish();
+    }
+
+    private String getCategoryNameById(int categoryId) {
+        for (Category category : allCategories) {
+            if (category.getId() == categoryId) {
+                return category.getName();
+            }
+        }
+        return null;
+    }
+
+    private String getBannerByCategoryId(int categoryId) {
+        for (Category category : allCategories) {
+            if (category.getId() == categoryId) {
+                String banner = category.getBannerUrl();
+                return (banner != null && !banner.isEmpty()) ? banner : "banner_disney";
+            }
+        }
+        return "banner_disney";
     }
 
     private void performSearch(String keyword) {
@@ -243,6 +361,28 @@ public class SearchActivity extends AppCompatActivity {
         searchRecyclerView.setVisibility(View.GONE);
         tvNoResults.setVisibility(View.GONE);
         emptyStateLayout.setVisibility(View.VISIBLE);
+    }
+
+    private String removeVietnameseTones(String str) {
+        if (str == null) return "";
+
+        str = str.replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a");
+        str = str.replaceAll("[èéẹẻẽêềếệểễ]", "e");
+        str = str.replaceAll("[ìíịỉĩ]", "i");
+        str = str.replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o");
+        str = str.replaceAll("[ùúụủũưừứựửữ]", "u");
+        str = str.replaceAll("[ỳýỵỷỹ]", "y");
+        str = str.replaceAll("[đ]", "d");
+
+        str = str.replaceAll("[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]", "A");
+        str = str.replaceAll("[ÈÉẸẺẼÊỀẾỆỂỄ]", "E");
+        str = str.replaceAll("[ÌÍỊỈĨ]", "I");
+        str = str.replaceAll("[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]", "O");
+        str = str.replaceAll("[ÙÚỤỦŨƯỪỨỰỬỮ]", "U");
+        str = str.replaceAll("[ỲÝỴỶỸ]", "Y");
+        str = str.replaceAll("[Đ]", "D");
+
+        return str;
     }
 
     @Override

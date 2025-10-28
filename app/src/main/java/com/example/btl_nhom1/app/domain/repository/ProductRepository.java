@@ -7,6 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.btl_nhom1.app.domain.model.Category;
 import com.example.btl_nhom1.app.dto.ApiResponse;
 import com.example.btl_nhom1.app.domain.model.Product;
 import com.example.btl_nhom1.app.dto.res.ProductPageResponse;
@@ -24,7 +25,7 @@ public class ProductRepository {
     private static final String API_SEARCH = BASE_URL + "getSearch.php?action=search&name=";
     private static final String API_FILTER = BASE_URL + "getFilteredProducts.php";
     private static final String API_GOLD_TYPES = BASE_URL + "getAllGoldTypes.php?action=goldTypes";
-    private static final String API_CATEGORIES = BASE_URL + "catetree.php?action=categories";
+    private static final String API_CATEGORY_TREE = BASE_URL + "catetree.php";
 
 
     private final RequestQueue requestQueue;
@@ -35,6 +36,44 @@ public class ProductRepository {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context);
         this.gson = new Gson();
+    }
+
+    public void fetchCategoryTree(CategoriesCallback callback) {
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                API_CATEGORY_TREE,
+                response -> {
+                    try {
+                        Log.d("ProductRepository", "Category tree response: " + response);
+
+                        Type responseType = new TypeToken<ApiResponse<List<Category>>>() {
+                        }.getType();
+                        ApiResponse<List<Category>> apiResponse = gson.fromJson(response, responseType);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData());
+                        } else {
+                            callback.onError("Không có dữ liệu");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("ProductRepository", "Error parsing categories: " + e.getMessage());
+                        callback.onError("Lỗi parse: " + e.getMessage());
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    callback.onError("Lỗi API: " + error.getMessage());
+                }
+        );
+
+        requestQueue.add(stringRequest);
+    }
+
+    public interface CategoriesCallback {
+        void onSuccess(List<Category> categories);
+
+        void onError(String errorMessage);
     }
 
     public void fetchGoldTypes(GoldTypesCallback callback) {
