@@ -35,7 +35,7 @@
             android:layout_height="80dp"
             android:src="@drawable/pnj_logo"
             android:contentDescription="PNJ Logo"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvBack" />

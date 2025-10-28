@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PNJ</string>
+    <string name="gender_prompt">gender_prompt</string>
 </resources>

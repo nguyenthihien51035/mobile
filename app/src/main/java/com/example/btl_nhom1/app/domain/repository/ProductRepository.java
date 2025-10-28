@@ -7,9 +7,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
-import com.example.btl_nhom1.app.data.remote.dto.res.ProductPageResponse;
 import com.example.btl_nhom1.app.domain.model.Product;
+import com.example.btl_nhom1.app.dto.ApiResponse;
+import com.example.btl_nhom1.app.dto.res.ProductPageResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

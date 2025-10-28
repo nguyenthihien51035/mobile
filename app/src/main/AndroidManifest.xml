@@ -28,6 +28,9 @@
         <activity android:name=".app.presentation.pages.login.LoginActivity" />
         <activity android:name=".app.presentation.pages.details.ProductDetailsActivity" />
         <activity android:name=".app.presentation.pages.containers.ContainerActivity" />
+        <activity android:name=".app.presentation.pages.comingsoon.ComingSoonActivity" />
+        <activity android:name=".app.presentation.pages.register.RegisterActivity" />
+        <activity android:name=".app.presentation.pages.profile.MyAccountActivity" />
     </application>
 
 </manifest>

@@ -7,8 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
 import com.example.btl_nhom1.app.domain.model.Account;
+import com.example.btl_nhom1.app.dto.ApiResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,6 +23,7 @@ public class AccountRepository {
     private static final String TAG = "AccountRepository";
     private static final String BASE_URL = "http://192.168.100.253/api/";
     private static final String API_LOGIN = BASE_URL + "postLogin.php";
+    private static final String API_GET_ACCOUNT = BASE_URL + "getAccountById.php";
 
     private final RequestQueue requestQueue;
     private final Gson gson;
@@ -88,12 +89,57 @@ public class AccountRepository {
         requestQueue.add(stringRequest);
     }
 
+    public void getAccountById(int userId, AccountCallback callback) {
+        String url = API_GET_ACCOUNT + "?action=getById&id=" + userId;
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    try {
+                        Log.d(TAG, "GetAccount Response: " + response);
+
+                        Type type = new TypeToken<ApiResponse<Account>>() {
+                        }.getType();
+                        ApiResponse<Account> apiResponse = gson.fromJson(response, type);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData());
+                        } else {
+                            String msg = apiResponse != null ? apiResponse.getMessage() : "Không có dữ liệu";
+                            callback.onError(msg);
+                        }
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Lỗi parse dữ liệu: " + e.getMessage(), e);
+                        callback.onError("Lỗi xử lý dữ liệu");
+                    }
+                },
+                error -> {
+                    String errorMsg = "Lỗi kết nối API";
+                    if (error.networkResponse != null)
+                        errorMsg += " (Code: " + error.networkResponse.statusCode + ")";
+                    Log.e(TAG, errorMsg, error);
+                    callback.onError(errorMsg);
+                }
+        );
+
+        requestQueue.add(stringRequest);
+    }
+
     public void cancelAllRequests() {
         if (requestQueue != null) requestQueue.cancelAll(request -> true);
     }
 
     public interface LoginCallback {
         void onSuccess(Account account, String message);
+
+        void onError(String errorMessage);
+    }
+
+    // Callback mới cho getAccountById
+    public interface AccountCallback {
+        void onSuccess(Account account);
 
         void onError(String errorMessage);
     }

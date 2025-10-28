@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.data.remote.dto;
+package com.example.btl_nhom1.app.dto;
 
 
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.data.remote.dto.res;
+package com.example.btl_nhom1.app.dto.res;
 
 import com.example.btl_nhom1.app.domain.model.Product;
 
