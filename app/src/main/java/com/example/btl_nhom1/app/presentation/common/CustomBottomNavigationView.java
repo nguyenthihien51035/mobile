@@ -84,6 +84,16 @@ public class CustomBottomNavigationView extends LinearLayout {
             }
         });
 
+        // Xử lý click cho Tư vấn
+        navConsult.setOnClickListener(v -> {
+            if (!(context instanceof CommingSoonActivity)) {
+                Intent intent = new Intent(context, CommingSoonActivity.class);
+                // Các flag này sẽ xóa tất cả Activity trên HomePageActivity và đưa HomePageActivity lên trên cùng
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                context.startActivity(intent);
+            }
+        });
+
         // Xử lý click cho Danh mục (sử dụng Listener để giao tiếp với Activity)
         navMenu.setOnClickListener(v -> {
             if (listener != null) {

@@ -15,6 +15,10 @@
         android:theme="@style/Theme.Btl_nhom1"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".app.presentation.pages.search.SearchActivity"
+            android:theme="@style/TransparentActivity"
+            android:exported="false" />
+        <activity
             android:name=".app.presentation.pages.containers.ContainerActivity"
             android:exported="false" />
         <activity

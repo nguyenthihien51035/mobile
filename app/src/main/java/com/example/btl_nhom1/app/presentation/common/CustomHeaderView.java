@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,8 +13,11 @@ import android.widget.TextView;
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.cart.CartActivity;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.search.SearchActivity;
 
 public class CustomHeaderView extends LinearLayout {
+    private OnSearchClickListener searchClickListener;
+
     public CustomHeaderView(Context context) {
         super(context);
         init(context);
@@ -29,12 +33,18 @@ public class CustomHeaderView extends LinearLayout {
         init(context);
     }
 
+    public void setOnSearchClickListener(OnSearchClickListener listener) {
+        this.searchClickListener = listener;
+    }
+
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.fragment_header, this, true);
 
         ImageView imgLogo = findViewById(R.id.imgLogo);
         TextView tvBadge = findViewById(R.id.tvCartBadge);
         ImageView imgCart = findViewById(R.id.imgCart);
+        EditText edtSearch = findViewById(R.id.edtSearch);
+
         // 👉 Click logo → quay về trang chủ
         imgLogo.setOnClickListener(v -> {
             Intent intent = new Intent(context, HomePageActivity.class);
@@ -49,5 +59,25 @@ public class CustomHeaderView extends LinearLayout {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(intent);
         });
+
+        // Khi người dùng bấm vào ô tìm kiếm - MỞ SEARCHACTIVITY
+        edtSearch.setOnClickListener(v -> {
+            // Mở SearchActivity
+            Intent intent = new Intent(context, SearchActivity.class);
+            context.startActivity(intent);
+
+            // Nếu có listener, cũng gọi
+            if (searchClickListener != null) {
+                searchClickListener.onSearchClicked();
+            }
+        });
+
+        // Đảm bảo EditText không thể nhập (chỉ click để mở màn hình tìm kiếm)
+        edtSearch.setFocusable(false);
+        edtSearch.setClickable(true);
+    }
+
+    public interface OnSearchClickListener {
+        void onSearchClicked();
     }
 }

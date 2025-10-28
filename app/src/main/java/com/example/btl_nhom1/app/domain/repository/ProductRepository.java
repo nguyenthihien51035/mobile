@@ -16,10 +16,12 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class ProductRepository {
-    private static final String BASE_URL = "http://192.168.100.205/api/";
+    private static final String BASE_URL = "http://192.168.1.13/api/";
     private static final String API_LATEST = BASE_URL + "getlatest.php?action=latest";
     private static final String API_TOP_SELLING = BASE_URL + "getTopSellingProducts.php?action=top-selling";
     private static final String API_PRODUCT_DETAILS = BASE_URL + "getProductDetails.php?id=";
+    private static final String API_SEARCH = BASE_URL + "getSearch.php?action=search&name=";
+
 
     private final RequestQueue requestQueue;
     private final Context context;
@@ -29,6 +31,39 @@ public class ProductRepository {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context);
         this.gson = new Gson();
+    }
+
+    public void searchProducts(String keyword, ProductCallback callback) {
+        String url = API_SEARCH + keyword;
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    try {
+                        Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
+                        }.getType();
+                        ApiResponse<List<Product>> apiResponse = gson.fromJson(response, responseType);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData());
+                        } else {
+                            callback.onSuccess(List.of()); // Trả về list rỗng
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("ProductRepository", "Lỗi parse kết quả tìm kiếm: " + e.getMessage(), e);
+                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    Log.e("ProductRepository", "Lỗi kết nối API tìm kiếm: " + error.getMessage(), error);
+                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+                }
+        );
+
+        requestQueue.add(stringRequest);
     }
 
     public void fetchLatestProducts(ProductCallback callback) {
