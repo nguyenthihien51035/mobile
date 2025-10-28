@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -57,9 +58,8 @@
             <!-- Banner -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/banner_disney"
                 android:scaleType="centerCrop">
 
                 <ImageView
@@ -134,13 +134,22 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/productContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="8dp" />
+
+            <LinearLayout
+                android:id="@+id/paginationContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Các sản phẩmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
-                android:textColor="#0A0A0A"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="12dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
 
             <!-- Footer -->
             <include
@@ -155,6 +164,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" />
+
+    <!-- Overlay Background -->
+    <!-- Custom Category Drawer -->
+    <com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer
+        android:id="@+id/customCategoryDrawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/fragment_container"

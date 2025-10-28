@@ -1,16 +1,17 @@
 package com.example.btl_nhom1.app.presentation.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Category;
+import com.example.btl_nhom1.app.presentation.pages.containers.ContainerActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +107,11 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
                         expandedMap.put(finalI, !expanded);
                         notifyDataSetChanged();
                     } else {
-                        Toast.makeText(context, "Chọn: " + parentCat.getName(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(context, ContainerActivity.class);
+                        intent.putExtra("categoryId", parentCat.getId());
+                        intent.putExtra("categoryName", parentCat.getName());
+                        intent.putExtra("bannerUrl", parentCat.getBannerUrl());
+                        context.startActivity(intent);
                     }
                 });
                 return view;
@@ -128,7 +133,11 @@ public class ExpandableCategoryAdapter extends BaseAdapter {
                             view.setBackgroundColor(Color.parseColor("#ffffff"));
 
                             view.setOnClickListener(v -> {
-                                Toast.makeText(context, "Chọn: " + sub.getName(), Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(context, ContainerActivity.class);
+                                intent.putExtra("categoryId", sub.getId());
+                                intent.putExtra("categoryName", sub.getName());
+                                intent.putExtra("bannerUrl", sub.getBannerUrl());
+                                context.startActivity(intent);
                             });
                             return view;
                         }

@@ -59,7 +59,7 @@
 
             <!-- Tuổi vàng Dropdown -->
             <RelativeLayout
-                android:id="@+id/ageDropdown"
+                android:id="@+id/goldTypeDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginBottom="24dp"
@@ -68,7 +68,7 @@
                 android:focusable="true">
 
                 <TextView
-                    android:id="@+id/ageSelectedText"
+                    android:id="@+id/goldTypeSelectedText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
