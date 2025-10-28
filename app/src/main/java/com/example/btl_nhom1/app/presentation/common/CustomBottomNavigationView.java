@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.login.AccountActivity;
 import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
@@ -66,49 +67,48 @@ public class CustomBottomNavigationView extends LinearLayout {
         });
 
         // Xử lý click cho My PNJ
-//        navMyPNJ.setOnClickListener(v -> {
-//            boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
-//
-//            if (isLoggedIn) {
-//                // Nếu đã đăng nhập, chuyển đến trang Profile/Account
-//                Toast.makeText(context, "Chuyển đến trang tài khoản", Toast.LENGTH_SHORT).show();
-//                // TODO: Navigate to ProfileActivity
-//                // Intent intent = new Intent(context, ProfileActivity.class);
-//                // context.startActivity(intent);
-//            } else {
-//                // Nếu chưa đăng nhập, chuyển đến LoginActivity
-//                if (!(context instanceof LoginActivity)) {
-//                    Intent intent = new Intent(context, LoginActivity.class);
-//                    context.startActivity(intent);
-//                }
-//            }
-//        });
-
 
         navMyPNJ.setOnClickListener(v -> {
             boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
 
             if (isLoggedIn) {
-                // Đăng xuất người dùng
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("is_logged_in", false);
-                editor.remove("user_name");
-                editor.remove("user_id");
-                editor.apply();
-
-                Toast.makeText(context, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-
-                // Chuyển về màn hình đăng nhập
-                Intent intent = new Intent(context, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                // Nếu đã đăng nhập, chuyển đến trang AccountActivity
+                Intent intent = new Intent(context, AccountActivity.class);
                 context.startActivity(intent);
-
             } else {
                 // Nếu chưa đăng nhập, chuyển đến LoginActivity
-                Intent intent = new Intent(context, LoginActivity.class);
-                context.startActivity(intent);
+                if (!(context instanceof LoginActivity)) {
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    context.startActivity(intent);
+                }
             }
         });
+
+
+//        navMyPNJ.setOnClickListener(v -> {
+//            boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
+//
+//            if (isLoggedIn) {
+//                // Đăng xuất người dùng
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putBoolean("is_logged_in", false);
+//                editor.remove("user_name");
+//                editor.remove("user_id");
+//                editor.apply();
+//
+//                Toast.makeText(context, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
+//
+//                // Chuyển về màn hình đăng nhập
+//                Intent intent = new Intent(context, LoginActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                context.startActivity(intent);
+//
+//            } else {
+//                // Nếu chưa đăng nhập, chuyển đến LoginActivity
+//                Intent intent = new Intent(context, LoginActivity.class);
+//                context.startActivity(intent);
+//            }
+//        });
 
 
         // Xử lý click cho Danh mục

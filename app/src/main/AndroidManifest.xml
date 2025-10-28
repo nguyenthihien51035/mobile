@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Btl_nhom1"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".app.presentation.pages.containers.ContainerActivity"
+            android:name=".app.presentation.pages.login.AccountActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +26,7 @@
         <activity android:name=".app.presentation.pages.cart.CartActivity" />
         <activity android:name=".app.presentation.pages.login.LoginActivity" />
         <activity android:name=".app.presentation.pages.details.ProductDetailsActivity" />
+        <activity android:name=".app.presentation.pages.home.HomePageActivity" />
     </application>
 
 </manifest>

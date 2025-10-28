@@ -27,7 +27,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.data.remote.dto.res.ProductPageResponse;
+import com.example.btl_nhom1.app.data.remote.dto.ProductPageResponse;
 import com.example.btl_nhom1.app.domain.model.Product;
 import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;

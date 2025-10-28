@@ -1,260 +1,304 @@
-package com.example.btl_nhom1.app.domain.repository;
+package com.example.btl_nhom1.app.presentation.pages.details;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
-import com.example.btl_nhom1.app.data.remote.dto.res.ProductPageResponse;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Product;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.btl_nhom1.app.domain.model.ProductImage;
+import com.example.btl_nhom1.app.domain.repository.ProductRepository;
+import com.example.btl_nhom1.app.presentation.adapter.ProductImageAdapter;
+import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
+import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
 
-import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
-public class ProductRepository {
-    private static final String BASE_URL = "http://192.168.100.253/api/";
-    private static final String API_LATEST = BASE_URL + "getlatest.php?action=latest";
-    private static final String API_TOP_SELLING = BASE_URL + "getTopSellingProducts.php?action=top-selling";
-    private static final String API_PRODUCT_DETAILS = BASE_URL + "getProductDetails.php?id=";
-    private static final String API_FILTER = BASE_URL + "getFilteredProducts.php";
-    private static final String API_GOLD_TYPES = BASE_URL + "getAllGoldTypes.php?action=goldTypes";
-    private final RequestQueue requestQueue;
-    private final Context context;
-    private final Gson gson;
+public class ProductDetailsActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
+    private static final String TAG = "ProductDetails";
+    private Context context;
+    private CustomCategoryDrawer customCategoryDrawer;
+    private CustomBottomNavigationView customBottomNav;
+    private ProductRepository productRepository;
+    private ViewPager2 viewPager;
+    private TextView tvImageIndicator;
+    private TextView tvProductName;
+    private TextView tvProductCode;
+    private TextView tvPrice;
+    private TextView tvInstallment;
+    private TextView tvSize;
+    private Button btnBuyNow;
+    private Button btnAddToCart;
+    private Button btnBuyFree;
+    private Product currentProduct;
+    private int productId;
+    private ViewPager2.OnPageChangeCallback pageChangeCallback;
 
-    public ProductRepository(Context context) {
-        this.context = context;
-        this.requestQueue = Volley.newRequestQueue(context);
-        this.gson = new Gson();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_product_details);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootCoordinator), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        context = this;
+        productRepository = new ProductRepository(context);
+
+        Intent intent = getIntent();
+        productId = intent.getIntExtra("PRODUCT_ID", -1);
+        Log.d(TAG, "onCreate productId=" + productId);
+
+        if (productId == -1) {
+            Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        initViews();
+        setupListeners();
+        loadProductDetails();
     }
 
-    public void fetchLatestProducts(ProductCallback callback) {
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                API_LATEST,
-                response -> {
-                    try {
-                        Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
-                        }.getType();
-                        ApiResponse<List<Product>> apiResponse = gson.fromJson(response, responseType);
+    private void initViews() {
+        viewPager = findViewById(R.id.viewPager);
+        tvImageIndicator = findViewById(R.id.tvImageIndicator);
+        tvProductName = findViewById(R.id.tvProductName);
+        tvProductCode = findViewById(R.id.tvProductCode);
+        tvPrice = findViewById(R.id.tvPrice);
+        tvInstallment = findViewById(R.id.tvInstallment);
+        tvSize = findViewById(R.id.tvSize);
+        btnBuyNow = findViewById(R.id.btnBuyNow);
+        btnAddToCart = findViewById(R.id.btnAddToCart);
+        btnBuyFree = findViewById(R.id.btnBuyFree);
 
-                        if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData());
-                        } else {
-                            callback.onError("Không có dữ liệu");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+        customCategoryDrawer = findViewById(R.id.customCategoryDrawer);
+        customBottomNav = findViewById(R.id.customBottomNav);
+
+        if (customBottomNav != null) {
+            customBottomNav.setOnBottomNavigationItemClickListener(this);
+        } else {
+            Log.e("ProductDetailsActivity", "CustomBottomNavigationView not found.");
+        }
+    }
+
+    private void setupListeners() {
+        btnBuyNow.setOnClickListener(v -> {
+            if (currentProduct != null) {
+                // TODO: mở activity/flow mua hàng; hiện tại show Toast
+                Toast.makeText(context, "Mua ngay: " + safeString(currentProduct.getName()), Toast.LENGTH_SHORT).show();
+
+                // mở activity Checkout
+                // Intent checkout = new Intent(context, CheckoutActivity.class);
+                // checkout.putExtra("PRODUCT_ID", currentProduct.getId());
+                // startActivity(checkout);
+            } else {
+                Toast.makeText(context, "Sản phẩm chưa sẵn sàng", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnAddToCart.setOnClickListener(v -> {
+            if (currentProduct != null) {
+                addToCart(currentProduct);
+                Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Sản phẩm chưa sẵn sàng", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadProductDetails() {
+        showLoading();
+        productRepository.fetchProductDetails(productId, new ProductRepository.ProductDetailsCallback() {
+            @Override
+            public void onSuccess(final Product product) {
+                Log.d(TAG, "fetch onSuccess product=" + (product == null ? "null" : product.getName()));
+                if (product == null) {
+                    runOnUiThread(() -> {
+                        hideLoading();
+                        Toast.makeText(context, "Sản phẩm rỗng", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                    return;
                 }
-        );
 
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchTopSellingProducts(ProductCallback callback) {
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                API_TOP_SELLING,
-                response -> {
+                runOnUiThread(() -> {
+                    hideLoading();
+                    currentProduct = product;
                     try {
-                        Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
-                        }.getType();
-                        ApiResponse<List<Product>> apiResponse = gson.fromJson(response, responseType);
-
-                        if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData());
-                        } else {
-                            callback.onError("Không có dữ liệu");
-                        }
+                        updateUI(product);
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("ProductRepository", "Lỗi parse dữ liệu: " + e.getMessage(), e);
-                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
+                        Log.e(TAG, "updateUI error", e);
+                        Toast.makeText(context, "Lỗi cập nhật giao diện", Toast.LENGTH_SHORT).show();
                     }
-                },
-                error -> {
-                    error.printStackTrace();
-                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+                });
+            }
+
+            @Override
+            public void onError(final String errorMessage) {
+                Log.e(TAG, "fetch onError: " + errorMessage);
+                runOnUiThread(() -> {
+                    hideLoading();
+                    Toast.makeText(context, "Lỗi: " + errorMessage, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void updateUI(Product product) {
+        // Name
+        tvProductName.setText(safeString(product.getName()));
+
+        // SKU / Code
+        tvProductCode.setText("Mã: " + safeString(product.getSku()));
+
+        // Price - xử lý an toàn với nhiều kiểu trả về
+        double priceValue = safeDouble(product.getPrice());
+        tvPrice.setText(formatCurrency(priceValue));
+
+        // Installment (12 tháng)
+        double monthly = priceValue / 12.0;
+        tvInstallment.setText("Chỉ cần trả " + formatCurrency(monthly) + "/tháng");
+
+        // Size
+        if (product.getSizes() != null && !product.getSizes().isEmpty()) {
+            String firstSize = product.getSizes().get(0).getSize();
+            tvSize.setText(safeString(firstSize));
+            tvSize.setVisibility(View.VISIBLE);
+        } else {
+            tvSize.setVisibility(View.GONE);
+        }
+
+        // Images
+        setupImageSlider(product.getImages());
+    }
+
+    private void setupImageSlider(final List<ProductImage> images) {
+        runOnUiThread(() -> {
+            if (images == null || images.isEmpty()) {
+                tvImageIndicator.setText("0/0");
+                return;
+            }
+
+            ProductImageAdapter adapter = new ProductImageAdapter(images);
+            viewPager.setAdapter(adapter);
+            viewPager.setOffscreenPageLimit(1);
+            tvImageIndicator.setText("1/" + images.size());
+
+            // Remove old callback if set
+            if (pageChangeCallback != null) {
+                try {
+                    viewPager.unregisterOnPageChangeCallback(pageChangeCallback);
+                } catch (Exception ignored) {
                 }
-        );
+            }
 
-        requestQueue.add(stringRequest);
-    }
-
-    public void fetchProductDetails(int productId, ProductDetailsCallback callback) {
-        String url = API_PRODUCT_DETAILS + productId;
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                url,
-                response -> {
-                    try {
-                        Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
-                        }.getType();
-                        ApiResponse<List<Product>> apiResponse = gson.fromJson(response, responseType);
-
-                        if (apiResponse != null && apiResponse.getData() != null && !apiResponse.getData().isEmpty()) {
-                            callback.onSuccess(apiResponse.getData().get(0));
-                        } else {
-                            callback.onError("Không tìm thấy sản phẩm");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("ProductRepository", "Lỗi parse chi tiết sản phẩm: " + e.getMessage(), e);
-                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    Log.e("ProductRepository", "Lỗi kết nối API chi tiết: " + error.getMessage(), error);
-                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+            pageChangeCallback = new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    tvImageIndicator.setText((position + 1) + "/" + images.size());
                 }
-        );
-
-        requestQueue.add(stringRequest);
+            };
+            viewPager.registerOnPageChangeCallback(pageChangeCallback);
+        });
     }
 
-    public void fetchGoldTypes(GoldTypesCallback callback) {
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                API_GOLD_TYPES,
-                response -> {
-                    try {
-                        Log.d("ProductRepository", "GoldTypes Response: " + response);
-
-                        Type responseType = new TypeToken<ApiResponse<List<String>>>() {
-                        }.getType();
-                        ApiResponse<List<String>> apiResponse = gson.fromJson(response, responseType);
-
-                        if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData());
-                        } else {
-                            callback.onError("Không có dữ liệu loại vàng");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    callback.onError("Lỗi kết nối API: " + error.getMessage());
-                }
-        );
-
-        requestQueue.add(stringRequest);
-    }
-
-    public void getFilteredProducts(
-            int categoryId,
-            int pageNumber,
-            int pageSize,
-            String goldType,
-            Integer fromPrice,
-            Integer toPrice,
-            String sortBy,
-            String sortDirection,
-            ProductPageCallback callback) {
-        StringBuilder urlBuilder = new StringBuilder(API_FILTER);
-        urlBuilder.append("?action=filterByCategory");
-        urlBuilder.append("&id=").append(categoryId);
-        urlBuilder.append("&pageSize=").append(pageSize);
-        urlBuilder.append("&pageNumber=").append(pageNumber);
-
-        // Filter params
-        if (goldType != null && !goldType.isEmpty()) {
-            urlBuilder.append("&goldType=").append(goldType);
-        }
-        if (fromPrice != null) {
-            urlBuilder.append("&fromPrice=").append(fromPrice);
-        }
-        if (toPrice != null) {
-            urlBuilder.append("&toPrice=").append(toPrice);
-        }
-
-        // Sort params
-        if (sortBy != null && !sortBy.isEmpty()) {
-            urlBuilder.append("&sortBy=").append(sortBy);
-        }
-        if (sortDirection != null && !sortDirection.isEmpty()) {
-            urlBuilder.append("&sortDirection=").append(sortDirection);
-        }
-
-        String url = urlBuilder.toString();
-        Log.i("ProductRepository", "📡 Filtered API: " + url);
-
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                url,
-                response -> {
-                    try {
-                        Log.d("ProductRepository", "Response: " + response);
-
-                        Type responseType = new TypeToken<ApiResponse<ProductPageResponse>>() {
-                        }.getType();
-                        ApiResponse<ProductPageResponse> apiResponse = gson.fromJson(response, responseType);
-
-                        if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData());
-                        } else {
-                            callback.onError("Không có dữ liệu");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        callback.onError("Lỗi parse: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    callback.onError("Lỗi API: " + error.getMessage());
-                }
-        );
-
-        requestQueue.add(stringRequest);
-    }
-
-
-    public void cancelAllRequests() {
-        if (requestQueue != null) {
-            requestQueue.cancelAll(request -> true);
+    private void addToCart(Product product) {
+        // Simple local add-to-cart: lưu vào SharedPreferences dưới dạng id list hoặc JSON
+        // Đây là demo đơn giản; bạn có thể gọi repository/cart manager thực sự
+        try {
+            // TODO: replace bằng logic lưu cart thực tế
+            Log.d(TAG, "addToCart: " + product.getId() + " - " + product.getName());
+        } catch (Exception e) {
+            Log.e(TAG, "addToCart error", e);
+            Toast.makeText(context, "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Interface callback để trả kết quả
-     */
-    public interface ProductCallback {
-        void onSuccess(List<Product> products);
-
-        void onError(String errorMessage);
+    private String safeString(Object o) {
+        return o == null ? "" : String.valueOf(o);
     }
 
-    public interface ProductDetailsCallback {
-        void onSuccess(Product product);
-
-        void onError(String errorMessage);
+    private double safeDouble(Object value) {
+        if (value == null) return 0d;
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        try {
+            return Double.parseDouble(String.valueOf(value).replaceAll("[^0-9\\.-]", ""));
+        } catch (Exception e) {
+            Log.w(TAG, "safeDouble parse error for value=" + value, e);
+            return 0d;
+        }
     }
 
-    public interface ProductPageCallback {
-        void onSuccess(ProductPageResponse response);
-
-        void onError(String errorMessage);
+    private String formatCurrency(double amount) {
+        try {
+            NumberFormat nf = NumberFormat.getInstance(new Locale("vi", "VN"));
+            nf.setMaximumFractionDigits(0);
+            return nf.format(amount) + " ₫";
+        } catch (Exception e) {
+            return String.format("%,.0f ₫", amount);
+        }
     }
 
-    public interface GoldTypesCallback {
-        void onSuccess(List<String> goldTypes);
+    private void showLoading() {
+        runOnUiThread(() -> {
+            if (btnBuyNow != null) btnBuyNow.setEnabled(false);
+            if (btnAddToCart != null) btnAddToCart.setEnabled(false);
+            if (btnBuyFree != null) btnBuyFree.setEnabled(false);
+            // TODO: show ProgressBar nếu bạn có
+        });
+    }
 
-        void onError(String errorMessage);
+    private void hideLoading() {
+        runOnUiThread(() -> {
+            if (btnBuyNow != null) btnBuyNow.setEnabled(true);
+            if (btnAddToCart != null) btnAddToCart.setEnabled(true);
+            if (btnBuyFree != null) btnBuyFree.setEnabled(true);
+            // TODO: hide ProgressBar nếu có
+        });
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (pageChangeCallback != null && viewPager != null) {
+                viewPager.unregisterOnPageChangeCallback(pageChangeCallback);
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (productRepository != null) {
+            productRepository.cancelAllRequests();
+        }
+    }
+
+    @Override
+    public void onCategoryMenuClicked() {
+        if (customCategoryDrawer != null) {
+            customCategoryDrawer.openDrawer();
+        }
     }
 }

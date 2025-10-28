@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class AccountRepository {
     private static final String TAG = "AccountRepository";
-    private static final String BASE_URL = "http://192.168.100.253/api/";
+    private static final String BASE_URL = "http://192.168.1.78/api/";
     private static final String API_LOGIN = BASE_URL + "postLogin.php";
 
     private final RequestQueue requestQueue;

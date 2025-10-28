@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FF000000</color>
+    <color name="your_primary_color">#E3E3E3</color>
+    <color name="grey_button_color">#FFFFFF</color>
+    <color name="border_color">#B0B0B0</color>
 </resources>
