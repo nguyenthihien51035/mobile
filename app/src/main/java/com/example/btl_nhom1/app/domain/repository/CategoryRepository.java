@@ -2,8 +2,8 @@ package com.example.btl_nhom1.app.domain.repository;
 
 import android.util.Log;
 
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
 import com.example.btl_nhom1.app.domain.model.Category;
+import com.example.btl_nhom1.app.dto.ApiResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,8 +19,8 @@ import okhttp3.Response;
 public class CategoryRepository {
     private static final String TAG = "CategoryRepository";
 
-    private static final String BASE_URL = "http://192.168.1.78/api/";
-    private static final String API_LATEST = BASE_URL + "catetree.php";
+    private static final String BASE_URL = "http://192.168.100.253/api/";
+    private static final String API_LATEST = BASE_URL + "getCategoryTree.php";
 
     private final OkHttpClient client;
     private final Gson gson;

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/myAccount"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
@@ -10,8 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <!-- Header -->
+        <!--  Header  -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,6 +27,7 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/ivHome"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
@@ -35,8 +35,7 @@
                 android:contentDescription="Home"
                 android:src="@drawable/ic_home" />
         </RelativeLayout>
-
-        <!-- User Info Card -->
+        <!--  User Info Card  -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +60,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_avatar" />
 
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,25 +69,17 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nu Ben"
+                        android:text="abc"
                         android:textColor="#000000"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Mã: 0000000005"
-                        android:textColor="#757575"
-                        android:textSize="12sp" />
                 </LinearLayout>
-
             </RelativeLayout>
-
-            <!-- Buttons -->
+            <!--  Buttons  -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

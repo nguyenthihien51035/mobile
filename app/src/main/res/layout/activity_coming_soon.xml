@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Tiêu đề -->
+    <ImageView
+        android:id="@+id/iv_construction1"
+        android:layout_width="267dp"
+        android:layout_height="272dp"
+        android:layout_marginBottom="30dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/tv_title1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:text="Chức năng đang được phát triển"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Mô tả -->
+    <TextView
+        android:id="@+id/tv_description1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:text="Tính năng này sẽ sớm có mặt. Vui lòng quay lại sau!"
+        android:textColor="#666666"
+        android:textSize="14sp" />
+
+    <!-- Nút quay lại (thứ hai) -->
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/button_rounded_background"
+        android:backgroundTint="#003468"
+        android:padding="10dp"
+        android:text="Quay lại"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        app:backgroundTint="#003468" />
+
+</LinearLayout>

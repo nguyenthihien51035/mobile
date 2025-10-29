@@ -7,9 +7,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.btl_nhom1.app.data.remote.dto.ApiResponse;
-import com.example.btl_nhom1.app.data.remote.dto.ProductPageResponse;
 import com.example.btl_nhom1.app.domain.model.Product;
+import com.example.btl_nhom1.app.dto.ApiResponse;
+import com.example.btl_nhom1.app.dto.res.ProductPageResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class ProductRepository {
-    private static final String BASE_URL = "http://192.168.1.78/api/";
+    private static final String BASE_URL = "http://192.168.100.253/api/";
     private static final String API_LATEST = BASE_URL + "getlatest.php?action=latest";
     private static final String API_TOP_SELLING = BASE_URL + "getTopSellingProducts.php?action=top-selling";
     private static final String API_PRODUCT_DETAILS = BASE_URL + "getProductDetails.php?id=";

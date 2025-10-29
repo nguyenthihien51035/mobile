@@ -1,4 +1,4 @@
-package com.example.btl_nhom1.app.presentation.pages.login;
+package com.example.btl_nhom1.app.presentation.pages.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,12 +11,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.btl_nhom1.R;
 
-public class AccountInfoFragment extends Fragment {
+public class ChangePasswordFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account_info, container, false);
+        return inflater.inflate(R.layout.fragment_change_password, container, false);
     }
 }

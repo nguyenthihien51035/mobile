@@ -5,17 +5,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.btl_nhom1.R;
+import com.example.btl_nhom1.app.presentation.pages.comingsoon.ComingSoonActivity;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
-import com.example.btl_nhom1.app.presentation.pages.login.AccountActivity;
 import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
+import com.example.btl_nhom1.app.presentation.pages.profile.MyAccountActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
-
     private OnBottomNavigationItemClickListener listener;
     private TextView tvMyPNJLabel;
     private SharedPreferences sharedPreferences;
@@ -66,15 +66,14 @@ public class CustomBottomNavigationView extends LinearLayout {
             }
         });
 
-        // Xử lý click cho My PNJ
-
         navMyPNJ.setOnClickListener(v -> {
             boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
 
             if (isLoggedIn) {
-                // Nếu đã đăng nhập, chuyển đến trang AccountActivity
-                Intent intent = new Intent(context, AccountActivity.class);
+                // Nếu đã đăng nhập, chuyển đến trang MyAccountActivity
+                Intent intent = new Intent(context, MyAccountActivity.class);
                 context.startActivity(intent);
+
             } else {
                 // Nếu chưa đăng nhập, chuyển đến LoginActivity
                 if (!(context instanceof LoginActivity)) {
@@ -84,33 +83,6 @@ public class CustomBottomNavigationView extends LinearLayout {
             }
         });
 
-
-//        navMyPNJ.setOnClickListener(v -> {
-//            boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
-//
-//            if (isLoggedIn) {
-//                // Đăng xuất người dùng
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putBoolean("is_logged_in", false);
-//                editor.remove("user_name");
-//                editor.remove("user_id");
-//                editor.apply();
-//
-//                Toast.makeText(context, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-//
-//                // Chuyển về màn hình đăng nhập
-//                Intent intent = new Intent(context, LoginActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                context.startActivity(intent);
-//
-//            } else {
-//                // Nếu chưa đăng nhập, chuyển đến LoginActivity
-//                Intent intent = new Intent(context, LoginActivity.class);
-//                context.startActivity(intent);
-//            }
-//        });
-
-
         // Xử lý click cho Danh mục
         navMenu.setOnClickListener(v -> {
             if (listener != null) {
@@ -119,9 +91,16 @@ public class CustomBottomNavigationView extends LinearLayout {
         });
 
         // Xử lý click cho các mục khác
-        navPromotion.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Khuyến mãi", Toast.LENGTH_SHORT).show());
-        navNotification.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Thông báo", Toast.LENGTH_SHORT).show());
-        navConsult.setOnClickListener(v -> Toast.makeText(context, "Chuyển đến Tư vấn", Toast.LENGTH_SHORT).show());
+        View.OnClickListener comingSoonClickListener = v -> {
+            if (!(context instanceof ComingSoonActivity)) {
+                Intent intent = new Intent(context, ComingSoonActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                context.startActivity(intent);
+            }
+        };
+        navPromotion.setOnClickListener(comingSoonClickListener);
+        navNotification.setOnClickListener(comingSoonClickListener);
+        navConsult.setOnClickListener(comingSoonClickListener);
     }
 
     /**
@@ -143,7 +122,6 @@ public class CustomBottomNavigationView extends LinearLayout {
             String fullName = sharedPreferences.getString("full_name", "");
             String username = sharedPreferences.getString("username", "");
 
-            // Ưu tiên ghép lastname + firstname
             String displayName = "";
             if (!firstName.isEmpty() || !lastName.isEmpty()) {
                 displayName = (lastName + " " + firstName).trim();

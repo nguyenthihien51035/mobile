@@ -1,8 +1,8 @@
 package com.example.btl_nhom1.app.presentation.pages.login;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,18 +12,18 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Account;
 import com.example.btl_nhom1.app.domain.repository.AccountRepository;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.utils.SharedPrefsUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
     private TextView tvBack, tvForgotPassword, tvSignUp, tvHomePage;
+    private ImageView ivLogo;
     private TextInputEditText etAccount, etPassword;
     private TextInputLayout tilAccount, tilPassword;
     private MaterialButton btnLogin;
-
     private AccountRepository accountRepository;
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +34,10 @@ public class LoginActivity extends AppCompatActivity {
         setupClickListeners();
 
         accountRepository = new AccountRepository(this);
-        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
     }
 
     private void initViews() {
+        ivLogo = findViewById(R.id.ivLogo);
         tvBack = findViewById(R.id.tvBack);
         etAccount = findViewById(R.id.etAccount);
         etPassword = findViewById(R.id.etPassword);
@@ -66,6 +66,13 @@ public class LoginActivity extends AppCompatActivity {
 
         // Trang chủ
         tvHomePage.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HomePageActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+
+        ivLogo.setOnClickListener(v -> {
             Intent intent = new Intent(this, HomePageActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
@@ -123,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     btnLogin.setEnabled(true);
                     btnLogin.setText("Đăng nhập");
-                    saveUserData(userData);
+                    SharedPrefsUtils.saveUserData(LoginActivity.this, userData);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     navigateToHome();
                 });
@@ -138,23 +145,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private void saveUserData(Account account) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("user_id", account.getUserId());
-        editor.putString("username", account.getUsername());
-        editor.putString("email", account.getEmail());
-        editor.putString("full_name", account.getFullName());
-        editor.putString("firstname", account.getFirstname());
-        editor.putString("lastname", account.getLastname());
-        editor.putString("phone", account.getPhone());
-        editor.putString("address", account.getAddress());
-        editor.putString("gender", account.getGender());
-        editor.putString("avatar", account.getAvatar());
-        editor.putString("token", account.getToken());
-        editor.putBoolean("is_logged_in", true);
-        editor.apply();
     }
 
     private void navigateToHome() {

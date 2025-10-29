@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -12,10 +14,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Btl_nhom1"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/Theme.Btl_nhom1">
         <activity
-            android:name=".app.presentation.pages.login.AccountActivity"
+            android:name=".app.presentation.pages.home.HomePageActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +27,10 @@
         <activity android:name=".app.presentation.pages.cart.CartActivity" />
         <activity android:name=".app.presentation.pages.login.LoginActivity" />
         <activity android:name=".app.presentation.pages.details.ProductDetailsActivity" />
-        <activity android:name=".app.presentation.pages.home.HomePageActivity" />
+        <activity android:name=".app.presentation.pages.containers.ContainerActivity" />
+        <activity android:name=".app.presentation.pages.comingsoon.ComingSoonActivity" />
+        <activity android:name=".app.presentation.pages.register.RegisterActivity" />
+        <activity android:name=".app.presentation.pages.profile.MyAccountActivity" />
     </application>
 
 </manifest>

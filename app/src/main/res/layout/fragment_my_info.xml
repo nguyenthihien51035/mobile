@@ -48,10 +48,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="toduc5233338@gmail.com"
+                        android:text="email"
                         android:textColor="#757575"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -92,10 +93,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvPhone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="0123456712"
+                        android:text="000000"
                         android:textColor="#757575"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -105,45 +107,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#E0E0E0" />
-
-            <!-- Birthday -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="Birthday"
-                    android:src="@drawable/ic_cake" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ngày sinh"
-                        android:textColor="#000000"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="27/7/2004"
-                        android:textColor="#757575"
-                        android:textSize="14sp" />
-                </LinearLayout>
-            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -180,10 +143,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvGender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Nam"
+                        android:text="a"
                         android:textColor="#757575"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -224,10 +188,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Văn Dương - Bắc Ninh"
+                        android:text="abc"
                         android:textColor="#757575"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -236,13 +201,16 @@
 
         <!-- Logout Button -->
         <LinearLayout
+            android:id="@+id/layoutLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@android:color/white"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:layout_width="24dp"
