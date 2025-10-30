@@ -58,6 +58,7 @@ public class ContainerActivity extends AppCompatActivity
     private ImageView imgBanner;
     private int categoryId;
     private String categoryName;
+    private String currentSearchName = null;
     private String bannerUrl;
     private int currentPage = 0;
     private int totalPages = 1;
@@ -98,6 +99,7 @@ public class ContainerActivity extends AppCompatActivity
         categoryId = getIntent().getIntExtra("categoryId", -1);
         categoryName = getIntent().getStringExtra("categoryName");
         bannerUrl = getIntent().getStringExtra("bannerUrl");
+        currentSearchName = getIntent().getStringExtra("search_keyword");
 
         Log.i("ContainerActivity", "===== START =====");
         Log.i("ContainerActivity", "Category ID: " + categoryId);
@@ -136,9 +138,6 @@ public class ContainerActivity extends AppCompatActivity
     public void onSortApplied(String sortBy, String sortDirection) {
         currentSortBy = sortBy;
         currentSortDirection = sortDirection;
-
-        Log.i("ContainerActivity", "Sort applied: " + sortBy + " - " + sortDirection);
-
         loadProductsByCategory(categoryId, 0);
     }
 
@@ -157,11 +156,6 @@ public class ContainerActivity extends AppCompatActivity
         currentGoldType = goldType;
         currentFromPrice = fromPrice;
         currentToPrice = toPrice;
-
-        Log.i("ContainerActivity", "Filter applied:");
-        Log.i("ContainerActivity", "Gold type: " + goldType);
-        Log.i("ContainerActivity", "Price: " + fromPrice + " - " + toPrice);
-
         loadProductsByCategory(categoryId, 0);
     }
 
@@ -231,7 +225,11 @@ public class ContainerActivity extends AppCompatActivity
     private void loadProductsByCategory(int id, int pageNumber) {
         Log.i("ProductLoad", "Đang tải trang " + (pageNumber + 1) + "...");
 
-        // Log filter info nếu có
+        if (currentSearchName != null) {
+            Log.i("ProductLoad", "Search keyword: " + currentSearchName);
+        }
+
+        // Log filter info
         if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
             Log.i("ProductLoad", "Filters:");
             if (currentGoldType != null) {
@@ -247,6 +245,7 @@ public class ContainerActivity extends AppCompatActivity
 
         repository.getFilteredProducts(
                 id,
+                currentSearchName, // ← Dùng biến instance
                 pageNumber,
                 pageSize,
                 currentGoldType,
@@ -269,6 +268,9 @@ public class ContainerActivity extends AppCompatActivity
                             createPaginationButtons();
 
                             String info = "Trang " + (pageNumber + 1) + "/" + totalPages;
+                            if (currentSearchName != null) {
+                                info += " - Tìm: \"" + currentSearchName + "\"";
+                            }
                             if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
                                 info += " (Đã lọc/sắp xếp)";
                             }

@@ -5,15 +5,17 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.cart.CartActivity;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
 
 public class CustomHeaderView extends LinearLayout {
+    private OnSearchClickListener searchClickListener;
+
     public CustomHeaderView(Context context) {
         super(context);
         init(context);
@@ -29,12 +31,16 @@ public class CustomHeaderView extends LinearLayout {
         init(context);
     }
 
+    public void setOnSearchClickListener(OnSearchClickListener listener) {
+        this.searchClickListener = listener;
+    }
+
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.fragment_header, this, true);
 
         ImageView imgLogo = findViewById(R.id.imgLogo);
-        TextView tvBadge = findViewById(R.id.tvCartBadge);
         ImageView imgCart = findViewById(R.id.imgCart);
+        EditText edtSearch = findViewById(R.id.edtSearch);
         // 👉 Click logo → quay về trang chủ
         imgLogo.setOnClickListener(v -> {
             Intent intent = new Intent(context, HomePageActivity.class);
@@ -49,5 +55,24 @@ public class CustomHeaderView extends LinearLayout {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(intent);
         });
+
+        edtSearch.setOnClickListener(v -> {
+            // Mở SearchActivity
+            Intent intent = new Intent(context, Search.class);
+            context.startActivity(intent);
+
+            // Nếu có listener, cũng gọi
+            if (searchClickListener != null) {
+                searchClickListener.onSearchClicked();
+            }
+        });
+
+        edtSearch.setFocusable(false);
+        edtSearch.setClickable(true);
+    }
+
+    public interface OnSearchClickListener {
+        void onSearchClicked();
     }
 }
+

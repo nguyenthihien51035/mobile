@@ -14,13 +14,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ProductRepository {
-    private static final String BASE_URL = "http://192.168.100.253/api/";
+    private static final String BASE_URL = "http://10.12.118.203/api/";
     private static final String API_LATEST = BASE_URL + "getlatest.php?action=latest";
     private static final String API_TOP_SELLING = BASE_URL + "getTopSellingProducts.php?action=top-selling";
     private static final String API_PRODUCT_DETAILS = BASE_URL + "getProductDetails.php?id=";
+    private static final String API_SEARCH = BASE_URL + "getSearch.php?action=search&name=";
     private static final String API_FILTER = BASE_URL + "getFilteredProducts.php";
     private static final String API_GOLD_TYPES = BASE_URL + "getAllGoldTypes.php?action=goldTypes";
     private final RequestQueue requestQueue;
@@ -156,8 +159,42 @@ public class ProductRepository {
         requestQueue.add(stringRequest);
     }
 
+    public void searchProducts(String keyword, ProductCallback callback) {
+        String url = API_SEARCH + keyword;
+
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                response -> {
+                    try {
+                        Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
+                        }.getType();
+                        ApiResponse<List<Product>> apiResponse = gson.fromJson(response, responseType);
+
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData());
+                        } else {
+                            callback.onSuccess(List.of()); // Trả về list rỗng
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("ProductRepository", "Lỗi parse kết quả tìm kiếm: " + e.getMessage(), e);
+                        callback.onError("Lỗi parse dữ liệu: " + e.getMessage());
+                    }
+                },
+                error -> {
+                    error.printStackTrace();
+                    Log.e("ProductRepository", "Lỗi kết nối API tìm kiếm: " + error.getMessage(), error);
+                    callback.onError("Lỗi kết nối API: " + error.getMessage());
+                }
+        );
+
+        requestQueue.add(stringRequest);
+    }
+
     public void getFilteredProducts(
             int categoryId,
+            String name,
             int pageNumber,
             int pageSize,
             String goldType,
@@ -172,6 +209,11 @@ public class ProductRepository {
         urlBuilder.append("&pageSize=").append(pageSize);
         urlBuilder.append("&pageNumber=").append(pageNumber);
 
+        if (name != null && !name.trim().isEmpty()) {
+            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+            urlBuilder.append("&name=").append(encodedName);
+        }
+
         // Filter params
         if (goldType != null && !goldType.isEmpty()) {
             urlBuilder.append("&goldType=").append(goldType);
@@ -182,7 +224,6 @@ public class ProductRepository {
         if (toPrice != null) {
             urlBuilder.append("&toPrice=").append(toPrice);
         }
-
         // Sort params
         if (sortBy != null && !sortBy.isEmpty()) {
             urlBuilder.append("&sortBy=").append(sortBy);

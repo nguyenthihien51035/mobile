@@ -2,6 +2,7 @@ package com.example.btl_nhom1.app.presentation.pages.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,9 +129,40 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Account userData, String message) {
                 runOnUiThread(() -> {
+                    if (userData.getId() <= 0) {
+                        Log.e("Login", "Account ID không hợp lệ: " + userData.getId());
+                        Toast.makeText(LoginActivity.this,
+                                "Lỗi: Không nhận được ID tài khoản từ server",
+                                Toast.LENGTH_LONG).show();
+
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText("Đăng nhập");
+                        return;
+                    }
+
+                    Log.d("Login", "Saving user data - ID: " + userData.getId());
+                    Log.d("Login", "Username: " + userData.getUsername());
+
+                    // Lưu vào SharedPreferences
+                    SharedPrefsUtils.saveUserData(LoginActivity.this, userData);
+
+                    int savedUserId = SharedPrefsUtils.getUserId(LoginActivity.this);
+                    String savedUsername = SharedPrefsUtils.getUsername(LoginActivity.this);
+                    Log.d("Login", "Verified saved data - ID: " + savedUserId + ", Username: " + savedUsername);
+
+                    if (savedUserId <= 0) {
+                        Log.e("Login", "SharedPrefs không lưu đúng userId!");
+                        Toast.makeText(LoginActivity.this,
+                                "Lỗi lưu thông tin đăng nhập. Vui lòng thử lại.",
+                                Toast.LENGTH_LONG).show();
+
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText("Đăng nhập");
+                        return;
+                    }
+
                     btnLogin.setEnabled(true);
                     btnLogin.setText("Đăng nhập");
-                    SharedPrefsUtils.saveUserData(LoginActivity.this, userData);
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     navigateToHome();
                 });
