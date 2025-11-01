@@ -59,7 +59,7 @@ public class ProductDetailsActivity extends AppCompatActivity implements CustomB
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        
+
         context = this;
         productRepository = new ProductRepository(context);
 

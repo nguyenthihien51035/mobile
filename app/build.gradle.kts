@@ -63,4 +63,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("androidx.paging:paging-runtime:3.1.1")
+
+    implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation("org.hibernate.validator:hibernate-validator:7.0.1.Final")
 }

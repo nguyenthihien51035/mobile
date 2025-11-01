@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.cart.CartActivity;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
-import com.example.btl_nhom1.app.presentation.pages.search.SearchActivity;
 
 public class CustomHeaderView extends LinearLayout {
     private OnSearchClickListener searchClickListener;
@@ -63,7 +62,7 @@ public class CustomHeaderView extends LinearLayout {
         // Khi người dùng bấm vào ô tìm kiếm - MỞ SEARCHACTIVITY
         edtSearch.setOnClickListener(v -> {
             // Mở SearchActivity
-            Intent intent = new Intent(context, SearchActivity.class);
+            Intent intent = new Intent(context, Search.class);
             context.startActivity(intent);
 
             // Nếu có listener, cũng gọi

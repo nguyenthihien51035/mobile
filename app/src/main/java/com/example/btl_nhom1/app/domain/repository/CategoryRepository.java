@@ -21,7 +21,7 @@ public class CategoryRepository {
     private static final String TAG = "CategoryRepository";
 
     private static final String BASE_URL = "http://192.168.100.205/api/";
-    private static final String API_LATEST = BASE_URL + "catetree.php";
+    private static final String API_LATEST = BASE_URL + "getCategoryTree.php";
 
     private final OkHttpClient client;
     private final Gson gson;

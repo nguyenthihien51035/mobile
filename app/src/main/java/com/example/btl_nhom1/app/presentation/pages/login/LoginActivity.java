@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +15,8 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Account;
 import com.example.btl_nhom1.app.domain.repository.AccountRepository;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.register.RegisterActivity;
+import com.example.btl_nhom1.app.presentation.utils.SharedPrefsUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -71,8 +74,12 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Chức năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show());
 
         // Đăng ký
-        tvSignUp.setOnClickListener(v ->
-                Toast.makeText(this, "Chuyển đến trang đăng ký (chưa làm)", Toast.LENGTH_SHORT).show());
+        tvSignUp.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         // Trang chủ
         tvHomePage.setOnClickListener(v -> {
@@ -131,9 +138,43 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Account userData, String message) {
                 runOnUiThread(() -> {
+                    if (userData.getId() <= 0) {
+                        Log.e("Login", "Account ID không hợp lệ: " + userData.getId());
+                        Toast.makeText(LoginActivity.this,
+                                "Lỗi: Không nhận được ID tài khoản từ server",
+                                Toast.LENGTH_LONG).show();
+
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText("Đăng nhập");
+                        return;
+                    }
+
+                    Log.d("Login", "Saving user data - ID: " + userData.getId());
+                    Log.d("Login", "Username: " + userData.getUsername());
+
+                    // Lưu vào SharedPreferences
+                    SharedPrefsUtils.saveUserData(LoginActivity.this, userData);
+
+                    int savedUserId = SharedPrefsUtils.getUserId(LoginActivity.this);
+                    String savedUsername = SharedPrefsUtils.getUsername(LoginActivity.this);
+                    Log.d("Login", "Verified saved data - ID: " + savedUserId + ", Username: " + savedUsername);
+
+                    if (savedUserId <= 0) {
+                        Log.e("Login", "SharedPrefs không lưu đúng userId!");
+                        Toast.makeText(LoginActivity.this,
+                                "Lỗi lưu thông tin đăng nhập. Vui lòng thử lại.",
+                                Toast.LENGTH_LONG).show();
+
+                        btnLogin.setEnabled(true);
+                        btnLogin.setText("Đăng nhập");
+                        return;
+                    }
+
                     btnLogin.setEnabled(true);
                     btnLogin.setText("Đăng nhập");
-                    saveUserData(userData);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("is_logged_in", true);
+                    editor.apply();
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                     navigateToHome();
                 });
@@ -148,23 +189,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private void saveUserData(Account account) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("user_id", account.getUserId());
-        editor.putString("username", account.getUsername());
-        editor.putString("email", account.getEmail());
-        editor.putString("full_name", account.getFullName());
-        editor.putString("firstname", account.getFirstname());
-        editor.putString("lastname", account.getLastname());
-        editor.putString("phone", account.getPhone());
-        editor.putString("address", account.getAddress());
-        editor.putString("gender", account.getGender());
-        editor.putString("avatar", account.getAvatar());
-        editor.putString("token", account.getToken());
-        editor.putBoolean("is_logged_in", true);
-        editor.apply();
     }
 
     private void navigateToHome() {

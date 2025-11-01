@@ -1,6 +1,7 @@
 package com.example.btl_nhom1.app.presentation.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchResultViewHolder> {
+    private final Context context;
+    private final OnProductClickListener listener;
     private List<Product> productList = new ArrayList<>();
-    private Context context;
-    private OnProductClickListener listener;
-
-    public interface OnProductClickListener {
-        void onProductClick(Product product);
-    }
 
     public SearchAdapter(Context context, OnProductClickListener listener) {
         this.context = context;
@@ -55,6 +52,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchResu
         return productList.size();
     }
 
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+    }
+
     class SearchResultViewHolder extends RecyclerView.ViewHolder {
         ImageView productImage;
         TextView productName;
@@ -76,38 +77,47 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchResu
             });
         }
 
-        public void bind(Product product) {
-            productName.setText(product.getName());
 
-            // Format giá
+        public void bind(Product product) {
+            String displayText = product.getName();
+            if (product.getSku() != null && !product.getSku().isEmpty()) {
+                displayText += " " + product.getSku();
+            }
+            productName.setText(displayText);
+
             NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
             productPrice.setText(formatter.format(product.getPrice()) + " đ");
 
-            // Hiển thị số lượng đã bán
             int sold = product.getSoldQuantity();
-            productSold.setText(sold + " đã bán");
+            if (sold > 0) {
+                productSold.setText("Đã bán: " + formatter.format(sold));
+            } else {
+                productSold.setText("");
+            }
 
-            // Load hình ảnh từ drawable
+            loadProductImage(product);
+        }
+
+        private void loadProductImage(Product product) {
             String imageUrl = product.getPrimaryImageUrl();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                // Lấy tên ảnh từ product (ví dụ: "kiengsp94_anh5")
-                String imageName = imageUrl;
 
-                // Lấy resource ID từ tên ảnh
+            if (imageUrl != null && !imageUrl.isEmpty()) {
                 int imageResId = context.getResources().getIdentifier(
-                        imageName,
+                        imageUrl,
                         "drawable",
                         context.getPackageName()
                 );
 
-                // Nếu tìm thấy ảnh trong drawable thì hiển thị, không thì dùng ảnh mặc định
                 if (imageResId != 0) {
                     productImage.setImageResource(imageResId);
+                    Log.d("ProductAdapter", "Loaded image: " + imageUrl);
                 } else {
                     productImage.setImageResource(R.drawable.ic_search_empty);
+                    Log.w("ProductAdapter", "Image not found: " + imageUrl);
                 }
             } else {
                 productImage.setImageResource(R.drawable.ic_search_empty);
+                Log.d("ProductAdapter", "No image URL for product: " + product.getName());
             }
         }
     }

@@ -59,6 +59,7 @@ public class ContainerActivity extends AppCompatActivity
     private ImageView imgBanner;
     private int categoryId;
     private String categoryName;
+    private String currentSearchName = null;
     private String bannerUrl;
     private int currentPage = 0;
     private int totalPages = 1;
@@ -99,14 +100,9 @@ public class ContainerActivity extends AppCompatActivity
         categoryId = getIntent().getIntExtra("categoryId", -1);
         categoryName = getIntent().getStringExtra("categoryName");
         bannerUrl = getIntent().getStringExtra("bannerUrl");
+        currentSearchName = getIntent().getStringExtra("search_keyword");
 
         String searchKeyword = getIntent().getStringExtra("search_keyword");
-
-        Log.i("ContainerActivity", "===== START =====");
-        Log.i("ContainerActivity", "Category ID: " + categoryId);
-        Log.i("ContainerActivity", "Category Name: " + categoryName);
-        Log.i("ContainerActivity", "Banner is null? " + (bannerUrl == null));
-        Log.i("ContainerActivity", "Banner is empty? " + (bannerUrl != null && bannerUrl.isEmpty()));
 
         initViews();
         setupBreadcrumb();
@@ -289,6 +285,10 @@ public class ContainerActivity extends AppCompatActivity
     private void loadProductsByCategory(int id, int pageNumber) {
         Log.i("ProductLoad", "Đang tải trang " + (pageNumber + 1) + "...");
 
+        if (currentSearchName != null) {
+            Log.i("ProductLoad", "Search keyword: " + currentSearchName);
+        }
+
         // Log filter info nếu có
         if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
             Log.i("ProductLoad", "Filters:");
@@ -305,7 +305,7 @@ public class ContainerActivity extends AppCompatActivity
 
         repository.getFilteredProducts(
                 id,
-                null,
+                currentSearchName,
                 pageNumber,
                 pageSize,
                 currentGoldType,
@@ -328,6 +328,9 @@ public class ContainerActivity extends AppCompatActivity
                             createPaginationButtons();
 
                             String info = "Trang " + (pageNumber + 1) + "/" + totalPages;
+                            if (currentSearchName != null) {
+                                info += " - Tìm: \"" + currentSearchName + "\"";
+                            }
                             if (currentGoldType != null || currentFromPrice != null || currentSortBy != null) {
                                 info += " (Đã lọc/sắp xếp)";
                             }

@@ -29,6 +29,7 @@ import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
 import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
 import com.example.btl_nhom1.app.presentation.common.CustomPagination;
 import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivity;
+import com.example.btl_nhom1.app.presentation.utils.SharedPrefsUtils;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class HomePageActivity extends AppCompatActivity
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        SharedPrefsUtils.logout(this);
 
         // Khởi tạo Repository
         productRepository = new ProductRepository(this);

@@ -13,6 +13,7 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.presentation.pages.home.CommingSoonActivity;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
 import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
+import com.example.btl_nhom1.app.presentation.pages.profile.MyAccountActivity;
 
 public class CustomBottomNavigationView extends LinearLayout {
 
@@ -42,7 +43,7 @@ public class CustomBottomNavigationView extends LinearLayout {
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.fragment_bottom_navigation, this, true);
 
-        sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
 
         LinearLayout navHome = findViewById(R.id.navHome);
         LinearLayout navPromotion = findViewById(R.id.navPromotion);
@@ -81,26 +82,16 @@ public class CustomBottomNavigationView extends LinearLayout {
             boolean isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false);
 
             if (isLoggedIn) {
-                // Đăng xuất người dùng
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("is_logged_in", false);
-                editor.remove("user_name");
-                editor.remove("user_id");
-                editor.apply();
-
-                Toast.makeText(context, "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-
-                // Chuyển về màn hình đăng nhập
-                Intent intent = new Intent(context, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                // Nếu đã đăng nhập, chuyển đến trang MyAccountActivity
+                Intent intent = new Intent(context, MyAccountActivity.class);
                 context.startActivity(intent);
-
             } else {
                 // Nếu chưa đăng nhập, chuyển đến LoginActivity
                 Intent intent = new Intent(context, LoginActivity.class);
                 context.startActivity(intent);
             }
         });
+
 
         // Xử lý click cho Thông báo
         navNotification.setOnClickListener(v -> {

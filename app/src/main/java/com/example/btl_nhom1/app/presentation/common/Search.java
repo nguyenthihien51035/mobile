@@ -1,9 +1,9 @@
-package com.example.btl_nhom1.app.presentation.pages.search;
+package com.example.btl_nhom1.app.presentation.common;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.content.Intent;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,18 +17,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Category;
 import com.example.btl_nhom1.app.domain.model.Product;
+import com.example.btl_nhom1.app.domain.repository.CategoryRepository;
 import com.example.btl_nhom1.app.domain.repository.ProductRepository;
 import com.example.btl_nhom1.app.presentation.adapter.SearchAdapter;
 import com.example.btl_nhom1.app.presentation.pages.containers.ContainerActivity;
@@ -37,21 +36,20 @@ import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivi
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity {
-    private static final String TAG = "SearchActivity";
+public class Search extends AppCompatActivity {
+    private static final String TAG = "Search";
+    private static final long SEARCH_DELAY = 500; // 0.5 giây debounce
     private int firstProductCategoryId = -1;
     private List<Category> allCategories = new ArrayList<>();
-    private static final long SEARCH_DELAY = 500; // 0.5 giây debounce
-
     private EditText searchEditText;
     private ImageView backButton, clearIcon;
     private RecyclerView searchRecyclerView;
     private ProgressBar progressBar;
     private TextView tvNoResults;
     private LinearLayout emptyStateLayout;
-
+    private CategoryRepository categoryRepository;
     private SearchAdapter adapter;
-    private ProductRepository repository;
+    private ProductRepository productRepository;
     private Handler searchHandler;
     private Runnable searchRunnable;
 
@@ -65,7 +63,8 @@ public class SearchActivity extends AppCompatActivity {
         setupRecyclerView();
         setupListeners();
 
-        repository = new ProductRepository(this);
+        categoryRepository = new CategoryRepository();
+        productRepository = new ProductRepository(this);
         searchHandler = new Handler(Looper.getMainLooper());
 
         loadCategories();
@@ -75,7 +74,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void loadCategories() {
-        repository.fetchCategoryTree(new ProductRepository.CategoriesCallback() {
+        categoryRepository.getCategories(new CategoryRepository.CategoryCallback() {
             @Override
             public void onSuccess(List<Category> categories) {
                 // Flatten tree thành list phẳng
@@ -85,7 +84,9 @@ public class SearchActivity extends AppCompatActivity {
 
                 // Log để debug
                 for (Category cat : allCategories) {
-                    Log.d(TAG, "Category: " + cat.getName() + " (ID: " + cat.getId() + ", Banner: " + cat.getBannerUrl() + ")");
+                    Log.d(TAG, "Category: " + cat.getName() +
+                            " (ID: " + cat.getId() +
+                            ", Banner: " + cat.getBannerUrl() + ")");
                 }
             }
 
@@ -93,6 +94,10 @@ public class SearchActivity extends AppCompatActivity {
             public void onError(String errorMessage) {
                 Log.e(TAG, "Error loading categories: " + errorMessage);
                 allCategories = new ArrayList<>();
+
+                Toast.makeText(Search.this,
+                        "Không thể tải danh mục: " + errorMessage,
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -166,7 +171,7 @@ public class SearchActivity extends AppCompatActivity {
     private void setupRecyclerView() {
         adapter = new SearchAdapter(this, product -> {
             // Click vào sản phẩm -> mở chi tiết
-            Intent intent = new Intent(SearchActivity.this, ProductDetailsActivity.class);
+            Intent intent = new Intent(Search.this, ProductDetailsActivity.class);
             intent.putExtra("PRODUCT_ID", product.getId());
             intent.putExtra("PRODUCT_NAME", product.getName());
             startActivity(intent);
@@ -224,7 +229,6 @@ public class SearchActivity extends AppCompatActivity {
 
                 String keyword = searchEditText.getText().toString().trim();
                 if (!keyword.isEmpty()) {
-                    // Chuyển sang FilterActivity với keyword
                     navigateToFilter(keyword);
                 }
                 return true;
@@ -233,22 +237,6 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    //    private void navigateToFilter(String keyword) {
-//        // Ẩn bàn phím
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-//
-//        // Chuyển sang ContainerActivity với keyword
-//        Intent intent = new Intent(SearchActivity.this, ContainerActivity.class);
-//        intent.putExtra("search_keyword", keyword);
-//        intent.putExtra("categoryId", -1); // -1 = tìm kiếm tất cả danh mục
-//        intent.putExtra("categoryName", "Kết quả tìm kiếm: " + keyword);
-//        intent.putExtra("bannerUrl", ""); // Không cần banner
-//        startActivity(intent);
-//
-//        // Đóng SearchActivity
-//        finish();
-//    }
     private void navigateToFilter(String keyword) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
@@ -266,7 +254,7 @@ public class SearchActivity extends AppCompatActivity {
         Log.d(TAG, "Keyword: " + keyword);
         Log.d(TAG, "Category ID: " + categoryId);
 
-        Intent intent = new Intent(SearchActivity.this, ContainerActivity.class);
+        Intent intent = new Intent(Search.this, ContainerActivity.class);
         intent.putExtra("search_keyword", keyword);
         intent.putExtra("categoryId", categoryId);
 
@@ -308,7 +296,7 @@ public class SearchActivity extends AppCompatActivity {
 
         showLoading();
 
-        repository.searchProducts(keyword, new ProductRepository.ProductCallback() {
+        productRepository.searchProducts(keyword, new ProductRepository.ProductCallback() {
             @Override
             public void onSuccess(List<Product> products) {
                 hideLoading();
@@ -391,8 +379,8 @@ public class SearchActivity extends AppCompatActivity {
         if (searchHandler != null && searchRunnable != null) {
             searchHandler.removeCallbacks(searchRunnable);
         }
-        if (repository != null) {
-            repository.cancelAllRequests();
+        if (productRepository != null) {
+            productRepository.cancelAllRequests();
         }
     }
 }

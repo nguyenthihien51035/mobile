@@ -3,6 +3,9 @@ package com.example.btl_nhom1.app.domain.repository;
 import android.content.Context;
 import android.util.Log;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -25,7 +28,6 @@ public class ProductRepository {
     private static final String API_SEARCH = BASE_URL + "getSearch.php?action=search&name=";
     private static final String API_FILTER = BASE_URL + "getFilteredProducts.php";
     private static final String API_GOLD_TYPES = BASE_URL + "getAllGoldTypes.php?action=goldTypes";
-    private static final String API_CATEGORY_TREE = BASE_URL + "catetree.php";
 
 
     private final RequestQueue requestQueue;
@@ -36,38 +38,6 @@ public class ProductRepository {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context);
         this.gson = new Gson();
-    }
-
-    public void fetchCategoryTree(CategoriesCallback callback) {
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.GET,
-                API_CATEGORY_TREE,
-                response -> {
-                    try {
-                        Log.d("ProductRepository", "Category tree response: " + response);
-
-                        Type responseType = new TypeToken<ApiResponse<List<Category>>>() {
-                        }.getType();
-                        ApiResponse<List<Category>> apiResponse = gson.fromJson(response, responseType);
-
-                        if (apiResponse != null && apiResponse.getData() != null) {
-                            callback.onSuccess(apiResponse.getData());
-                        } else {
-                            callback.onError("Không có dữ liệu");
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("ProductRepository", "Error parsing categories: " + e.getMessage());
-                        callback.onError("Lỗi parse: " + e.getMessage());
-                    }
-                },
-                error -> {
-                    error.printStackTrace();
-                    callback.onError("Lỗi API: " + error.getMessage());
-                }
-        );
-
-        requestQueue.add(stringRequest);
     }
 
     public interface CategoriesCallback {
@@ -124,8 +94,9 @@ public class ProductRepository {
         urlBuilder.append("&pageSize=").append(pageSize);
         urlBuilder.append("&pageNumber=").append(pageNumber);
 
-        if (name != null && !name.isEmpty()) {
-            urlBuilder.append("&name=").append(name);
+        if (name != null && !name.trim().isEmpty()) {
+            String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
+            urlBuilder.append("&name=").append(encodedName);
         }
 
         // Filter params
