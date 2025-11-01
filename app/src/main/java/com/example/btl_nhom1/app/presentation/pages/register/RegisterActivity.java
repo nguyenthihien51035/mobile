@@ -2,11 +2,8 @@ package com.example.btl_nhom1.app.presentation.pages.register;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,112 +14,145 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.btl_nhom1.R;
-import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.domain.model.Account;
+import com.example.btl_nhom1.app.domain.repository.AccountRepository;
 import com.example.btl_nhom1.app.presentation.pages.login.LoginActivity;
+import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.Calendar;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText edtUsername, edtPassword, edtConfirmPassword, edtFirstname, edtLastname, edtPhone, edtEmail, edtAddress;
     private TextView edtBirthDate;
+    private ImageView imgCalendar;
     private Spinner spinnerGender;
-    private ImageView imgAvatar, imgCalendar;
-    private Button btnChooseImage, btnRegister;
-    private Uri selectedImageUri;
+    private ImageView imgAvatar;
+    private Button btnChooseImage;
 
+    // Thêm các views cần thiết cho validation
+    private EditText edtLastName, edtFirstName, edtEmail, edtUsername, edtPhone, edtAddress;
+    private TextInputEditText edtPassword, edtConfirmPassword;
+    private Button btnRegister;
+
+    // Activity result launcher để lấy ảnh từ gallery
     private ActivityResultLauncher<Intent> pickImageLauncher;
+
+    // Repository để gọi API
+    private AccountRepository accountRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Bind views
+        // bind views
+        edtBirthDate = findViewById(R.id.edtBirthDate);
+        imgCalendar = findViewById(R.id.imgCalendar);
+        spinnerGender = findViewById(R.id.spinnerGender);
+        imgAvatar = findViewById(R.id.imgAvatar);
+        btnChooseImage = findViewById(R.id.btnChooseImage);
+
+        // Thêm bind cho validation
+        edtLastName = findViewById(R.id.edtLastName);
+        edtFirstName = findViewById(R.id.edtFirstName);
+        edtEmail = findViewById(R.id.edtEmail);
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         edtConfirmPassword = findViewById(R.id.edtConfirmPassword);
-        edtFirstname = findViewById(R.id.edtFirstName);
-        edtLastname = findViewById(R.id.edtLastName);
-        edtPhone = findViewById(R.id.edtPhone);
-        edtEmail = findViewById(R.id.edtEmail);
-        edtAddress = findViewById(R.id.edtAddress);
-        edtBirthDate = findViewById(R.id.edtBirthDate);
-        spinnerGender = findViewById(R.id.spinnerGender);
-        imgAvatar = findViewById(R.id.imgAvatar);
-        imgCalendar = findViewById(R.id.imgCalendar);
-        btnChooseImage = findViewById(R.id.btnChooseImage);
         btnRegister = findViewById(R.id.register);
+        edtPhone = findViewById(R.id.edtPhone);
+        edtAddress = findViewById(R.id.edtAddress);
 
-        // Spinner giới tính
+        // Khởi tạo repository
+        accountRepository = new AccountRepository(this);
+
+        // 1) Spinner: lấy dữ liệu từ string-array (res/values/strings.xml)
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.gender_array, android.R.layout.simple_spinner_item);
+                this,
+                R.array.gender_array,
+                android.R.layout.simple_spinner_item
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGender.setAdapter(adapter);
 
-        // Date picker
-        View.OnClickListener openDatePicker = v -> showDatePicker();
+        // 2) Date picker: khi click vào TextView hoặc icon calendar
+        View.OnClickListener openDatePicker = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        };
         edtBirthDate.setOnClickListener(openDatePicker);
         imgCalendar.setOnClickListener(openDatePicker);
 
-        // ActivityResultLauncher để chọn ảnh
+        // 3) Avatar picker: đăng ký ActivityResultLauncher
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        selectedImageUri = result.getData().getData();
-                        if (selectedImageUri != null) {
-                            imgAvatar.setImageURI(selectedImageUri);
-                            Log.d("REGISTER_AVATAR", "Selected image: " + selectedImageUri);
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Uri selectedImageUri = result.getData().getData();
+                            if (selectedImageUri != null) {
+                                // Hiển thị ảnh vào ImageView
+                                imgAvatar.setImageURI(selectedImageUri);
+                                // Nếu cần xử lý thêm (ví dụ resize), làm ở đây
+                            }
                         }
                     }
                 }
         );
 
-        btnChooseImage.setOnClickListener(v -> openGalleryForImage());
-
-        // Navigation
-        findViewById(R.id.tvHome).setOnClickListener(v -> {
-            startActivity(new Intent(this, HomePageActivity.class));
-            finish();
+        btnChooseImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGalleryForImage();
+            }
         });
 
-        findViewById(R.id.tvLogin).setOnClickListener(v -> {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
+        // đảm bảo ImageView bo tròn trong XML bằng drawable + clipToOutline (nếu dùng)
+        // nếu muốn, bạn có thể set placeholder ở đây:
+        imgAvatar.setImageResource(android.R.drawable.ic_menu_gallery);
+
+        // 4) Xử lý nút đăng ký
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateInputs()) {
+                    handleRegister();
+                }
+            }
         });
-
-        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
-
-        btnRegister.setOnClickListener(v -> performRegister());
     }
 
     private void showDatePicker() {
+        // lấy ngày hiện tại làm mặc định
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
+        int month = c.get(Calendar.MONTH); // 0-based
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dialog = new DatePickerDialog(
-                this,
-                (DatePicker view, int y, int m, int d) ->
-                        edtBirthDate.setText(String.format("%02d/%02d/%04d", d, m + 1, y)),
-                year, month, day);
-        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        dialog.show();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                RegisterActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int selYear, int selMonth, int selDay) {
+                        // selMonth là 0-based -> +1 cho hiển thị
+                        String formatted = String.format("%02d/%02d/%04d", selDay, selMonth + 1, selYear);
+                        edtBirthDate.setText(formatted);
+                    }
+                }, year, month, day);
+
+        // Optionally: set giới hạn chọn ngày (ví dụ không cho chọn ngày trong tương lai)
+        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+        datePickerDialog.show();
     }
 
     private void openGalleryForImage() {
@@ -131,159 +161,139 @@ public class RegisterActivity extends AppCompatActivity {
         pickImageLauncher.launch(intent);
     }
 
-    private void performRegister() {
-        String username = edtUsername.getText().toString().trim();
-        String password = edtPassword.getText().toString().trim();
-        String confirmPassword = edtConfirmPassword.getText().toString().trim();
-        String firstName = edtFirstname.getText().toString().trim();
-        String lastName = edtLastname.getText().toString().trim();
-        String phone = edtPhone.getText().toString().trim();
+    // Hàm validation với regex mật khẩu
+    private boolean validateInputs() {
+        // Validate họ
+        if (edtLastName.getText().toString().trim().isEmpty()) {
+            edtLastName.setError("Vui lòng nhập họ");
+            edtLastName.requestFocus();
+            return false;
+        }
+
+        // Validate tên
+        if (edtFirstName.getText().toString().trim().isEmpty()) {
+            edtFirstName.setError("Vui lòng nhập tên");
+            edtFirstName.requestFocus();
+            return false;
+        }
+
+        // Validate email
         String email = edtEmail.getText().toString().trim();
-        String address = edtAddress.getText().toString().trim();
+        if (email.isEmpty()) {
+            edtEmail.setError("Vui lòng nhập email");
+            edtEmail.requestFocus();
+            return false;
+        }
+
+        // Validate tài khoản
+        String username = edtUsername.getText().toString().trim();
+        if (username.isEmpty()) {
+            edtUsername.setError("Vui lòng nhập tài khoản");
+            edtUsername.requestFocus();
+            return false;
+        }
+
+        // Validate mật khẩu với regex: 8–16 ký tự, ít nhất 1 chữ hoa, 1 chữ thường, 1 số, 1 ký tự đặc biệt
+        String password = edtPassword.getText().toString();
+        if (password.isEmpty()) {
+            edtPassword.setError("Vui lòng nhập mật khẩu");
+            edtPassword.requestFocus();
+            return false;
+        }
+
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$";
+        if (!password.matches(passwordRegex)) {
+            edtPassword.setError("Mật khẩu phải có 8-16 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&)");
+            edtPassword.requestFocus();
+            return false;
+        }
+
+        // Validate xác nhận mật khẩu
+        String confirmPassword = edtConfirmPassword.getText().toString();
+        if (confirmPassword.isEmpty()) {
+            edtConfirmPassword.setError("Vui lòng xác nhận mật khẩu");
+            edtConfirmPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            edtConfirmPassword.setError("Mật khẩu không khớp");
+            edtConfirmPassword.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Hàm xử lý đăng ký
+    private void handleRegister() {
+        // Disable button để tránh click nhiều lần
+        btnRegister.setEnabled(false);
+
+        // Lấy dữ liệu từ form
+        String firstName = edtFirstName.getText().toString().trim();
+        String lastName = edtLastName.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
         String birthDate = edtBirthDate.getText().toString().trim();
         String gender = spinnerGender.getSelectedItem().toString();
+        String phone = edtPhone.getText().toString().trim();
+        String address = edtAddress.getText().toString().trim();
+        String username = edtUsername.getText().toString().trim();
+        String password = edtPassword.getText().toString();
 
-        // Validation
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, "Mật khẩu xác nhận không khớp!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // Gọi API đăng ký
+        accountRepository.register(
+                firstName,
+                lastName,
+                email,
+                birthDate,
+                gender,
+                phone,
+                address,
+                username,
+                password,
+                null, // avatarBase64 (chưa xử lý)
+                new AccountRepository.RegisterCallback() {
+                    @Override
+                    public void onSuccess(Account account, String message) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnRegister.setEnabled(true);
+                                Toast.makeText(RegisterActivity.this,
+                                        message != null ? message : "Đăng ký thành công!",
+                                        Toast.LENGTH_LONG).show();
 
-        if (username.isEmpty() || password.isEmpty() || email.isEmpty() ||
-                firstName.isEmpty() || lastName.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin bắt buộc!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.d("REGISTER_DEBUG", "Starting registration...");
-
-        new Thread(() -> {
-            try {
-                OkHttpClient client = new OkHttpClient();
-                MultipartBody.Builder builder = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("firstName", firstName)
-                        .addFormDataPart("lastName", lastName)
-                        .addFormDataPart("email", email)
-                        .addFormDataPart("dateOfBirth", birthDate)
-                        .addFormDataPart("gender", gender)
-                        .addFormDataPart("phone", phone)
-                        .addFormDataPart("address", address)
-                        .addFormDataPart("userName", username)
-                        .addFormDataPart("password", password);
-
-                // ✅ UPLOAD FILE ẢNH LÊN SERVER (nếu có chọn ảnh)
-                if (selectedImageUri != null) {
-                    File imageFile = getFileFromUri(selectedImageUri);
-                    if (imageFile != null && imageFile.exists()) {
-                        RequestBody fileBody = RequestBody.create(
-                                imageFile,
-                                MediaType.parse("image/*")
-                        );
-                        builder.addFormDataPart("avatar", imageFile.getName(), fileBody);
-                        Log.d("REGISTER_DEBUG", "✅ Uploading image: " + imageFile.getName());
-                    } else {
-                        Log.w("REGISTER_DEBUG", "⚠️ Image file not found, using default avatar");
+                                // Quay lại màn hình login
+                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
                     }
-                } else {
-                    Log.d("REGISTER_DEBUG", "ℹ️ No image selected, using default avatar");
-                }
 
-                RequestBody body = builder.build();
-
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url("http://10.0.2.2/api/postRegister.php")
-                        .post(body)
-                        .build();
-
-                okhttp3.Response response = client.newCall(request).execute();
-                String responseBody = response.body() != null ? response.body().string() : "null";
-
-                Log.d("REGISTER_RESPONSE", "Code: " + response.code());
-                Log.d("REGISTER_RESPONSE", "Body: " + responseBody);
-
-                runOnUiThread(() -> {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(this, LoginActivity.class));
-                        finish();
-                    } else if (response.code() == 409) {
-                        // Parse error message từ server
-                        try {
-                            org.json.JSONObject json = new org.json.JSONObject(responseBody);
-                            String message = json.optString("message", "Thông tin đã tồn tại!");
-                            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-                        } catch (Exception e) {
-                            Toast.makeText(this, "Thông tin đã tồn tại!", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(this, "Đăng ký thất bại (" + response.code() + ")", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-            } catch (Exception e) {
-                Log.e("REGISTER_ERROR", "Exception: " + e.getMessage(), e);
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Lỗi kết nối server!", Toast.LENGTH_SHORT).show());
-            }
-        }).start();
-    }
-
-    /**
-     * Chuyển Uri thành File để upload
-     */
-    private File getFileFromUri(Uri uri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            if (inputStream == null) {
-                Log.e("FILE_CONVERT", "Cannot open input stream");
-                return null;
-            }
-
-            // Tạo file tạm trong cache directory
-            String fileName = getFileNameFromUri(uri);
-            File tempFile = new File(getCacheDir(), fileName);
-
-            FileOutputStream outputStream = new FileOutputStream(tempFile);
-            byte[] buffer = new byte[4096];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-            outputStream.close();
-            inputStream.close();
-
-            Log.d("FILE_CONVERT", "✅ Created temp file: " + tempFile.getAbsolutePath());
-            return tempFile;
-
-        } catch (Exception e) {
-            Log.e("FILE_CONVERT", "Error converting Uri to File: " + e.getMessage(), e);
-            return null;
-        }
-    }
-
-    /**
-     * Lấy tên file từ Uri
-     */
-    private String getFileNameFromUri(Uri uri) {
-        String result = null;
-        if ("content".equals(uri.getScheme())) {
-            try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                    if (nameIndex >= 0) {
-                        result = cursor.getString(nameIndex);
+                    @Override
+                    public void onError(String errorMessage) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnRegister.setEnabled(true);
+                                Toast.makeText(RegisterActivity.this,
+                                        errorMessage,
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 }
-            }
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (accountRepository != null) {
+            accountRepository.cancelAllRequests();
         }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return result != null ? result : "avatar.jpg";
     }
 }

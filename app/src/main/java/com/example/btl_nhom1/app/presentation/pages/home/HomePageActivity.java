@@ -83,8 +83,6 @@ public class HomePageActivity extends AppCompatActivity
             return insets;
         });
 
-        SharedPrefsUtils.logout(this);
-
         // Khởi tạo Repository
         productRepository = new ProductRepository(this);
 

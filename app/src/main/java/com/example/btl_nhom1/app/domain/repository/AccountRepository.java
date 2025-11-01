@@ -30,7 +30,7 @@ import okhttp3.Response;
 
 public class AccountRepository {
     private static final String TAG = "AccountRepository";
-    private static final String BASE_URL = "http://192.168.100.205/api/";
+    private static final String BASE_URL = "http://192.168.110.105/api/";
     private static final String API_LOGIN = BASE_URL + "postLogin.php";
     private static final String API_GET_ACCOUNT = BASE_URL + "getAccountById.php";
     private static final String API_CHANGE_PASSWORD = BASE_URL + "putChangePassword.php";
@@ -108,72 +108,88 @@ public class AccountRepository {
         requestQueue.add(stringRequest);
     }
 
-    public void register(Account account, RegisterCallback callback) {
-        try {
-            // ✅ Tạo JSON body gửi lên API
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("userName", account.getUsername());
-            jsonBody.put("firstName", account.getFirstname());
-            jsonBody.put("lastName", account.getLastname());
-            jsonBody.put("dateOfBirth", account.getDateOfBirth());
-            jsonBody.put("gender", account.getGender());
-            jsonBody.put("phone", account.getPhone());
-            jsonBody.put("address", account.getAddress());
-            jsonBody.put("email", account.getEmail());
-            jsonBody.put("password", account.getPassword());
-            jsonBody.put("avatar", account.getAvatar()); // chỉ là tên ảnh, ví dụ "avatar1"
+    public void register(String firstName, String lastName, String email, String birthDate,
+                         String gender, String phone, String address, String username,
+                         String password, String avatarBase64, RegisterCallback callback) {
 
-            RequestBody body = RequestBody.create(
-                    jsonBody.toString(),
-                    MediaType.parse("application/json; charset=utf-8")
-            );
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST,
+                API_REGISTER,
+                response -> {
+                    try {
+                        Log.d(TAG, "Register Response: " + response);
 
-            okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(API_REGISTER)
-                    .post(body)
-                    .build();
+                        Type type = new TypeToken<ApiResponse<Account>>() {
+                        }.getType();
+                        ApiResponse<Account> apiResponse = gson.fromJson(response, type);
 
-            okHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e(TAG, "Register network error: " + e.getMessage(), e);
-                    callback.onError("Lỗi kết nối: " + e.getMessage());
-                }
+                        if (apiResponse != null && apiResponse.getData() != null) {
+                            callback.onSuccess(apiResponse.getData(), apiResponse.getMessage());
+                        } else {
+                            String msg = apiResponse != null ? apiResponse.getMessage() : "Lỗi không xác định";
+                            callback.onError(msg);
+                        }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String responseBody = response.body() != null ? response.body().string() : "";
-                    Log.d(TAG, "Register Response Code: " + response.code());
-                    Log.d(TAG, "Register Response Body: " + responseBody);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Lỗi parse dữ liệu: " + e.getMessage(), e);
+                        callback.onError("Lỗi xử lý dữ liệu");
+                    }
+                },
+                error -> {
+                    String errorMsg = "Lỗi kết nối API";
+                    if (error.networkResponse != null) {
+                        errorMsg += " (Code: " + error.networkResponse.statusCode + ")";
 
-                    if (response.isSuccessful()) {
+                        // Parse error response
                         try {
+                            String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                            Log.e(TAG, "Error Response: " + responseBody);
+
                             Type type = new TypeToken<ApiResponse<Account>>() {
                             }.getType();
-                            ApiResponse<Account> apiResponse = gson.fromJson(responseBody, type);
+                            ApiResponse<Account> errorResponse = gson.fromJson(responseBody, type);
 
-                            if (apiResponse != null && apiResponse.getData() != null) {
-                                callback.onSuccess(apiResponse.getData(), apiResponse.getMessage());
-                            } else {
-                                String msg = apiResponse != null ? apiResponse.getMessage() : "Đăng ký thất bại";
-                                callback.onError(msg);
+                            if (errorResponse != null && errorResponse.getMessage() != null) {
+                                callback.onError(errorResponse.getMessage());
+                                return;
                             }
                         } catch (Exception e) {
-                            Log.e(TAG, "Parse error: " + e.getMessage(), e);
-                            callback.onError("Lỗi xử lý dữ liệu");
+                            Log.e(TAG, "Parse error response failed", e);
                         }
-                    } else {
-                        callback.onError("Lỗi HTTP: " + response.code());
                     }
+                    Log.e(TAG, errorMsg, error);
+                    callback.onError(errorMsg);
                 }
-            });
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("userName", username);
+                params.put("firstName", firstName);
+                params.put("lastName", lastName);
+                params.put("email", email);
+                params.put("password", password);
 
-        } catch (Exception e) {
-            Log.e(TAG, "Error creating register request: " + e.getMessage(), e);
-            callback.onError("Lỗi tạo request: " + e.getMessage());
-        }
+                // Optional fields
+                if (birthDate != null && !birthDate.isEmpty()) {
+                    params.put("dateOfBirth", birthDate);
+                }
+                if (gender != null && !gender.isEmpty()) {
+                    params.put("gender", gender);
+                }
+                if (phone != null && !phone.isEmpty()) {
+                    params.put("phone", phone);
+                }
+                if (address != null && !address.isEmpty()) {
+                    params.put("address", address);
+                }
+
+                return params;
+            }
+        };
+
+        requestQueue.add(stringRequest);
     }
-
 
     public void changePassword(int userId, String currentPassword, String newPassword, ChangePasswordCallback callback) {
         String url = API_CHANGE_PASSWORD + "?id=" + userId;
