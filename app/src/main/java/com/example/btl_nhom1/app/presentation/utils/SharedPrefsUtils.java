@@ -21,7 +21,6 @@ public class SharedPrefsUtils {
     public static final String KEY_STATUS = "status";
     public static final String KEY_TOKEN = "token";
     public static final String KEY_IS_LOGGED_IN = "is_logged_in";
-
     private static final String PREFS_NAME = "user_prefs";
 
     /**

@@ -28,6 +28,7 @@ import com.example.btl_nhom1.app.presentation.adapter.SliderAdapter;
 import com.example.btl_nhom1.app.presentation.common.CustomBottomNavigationView;
 import com.example.btl_nhom1.app.presentation.common.CustomCategoryDrawer;
 import com.example.btl_nhom1.app.presentation.pages.details.ProductDetailsActivity;
+import com.example.btl_nhom1.app.presentation.utils.SharedPrefsUtils;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class HomePageActivity extends AppCompatActivity implements CustomBottomNavigationView.OnBottomNavigationItemClickListener {
-
     private static final long SLIDE_DELAY_MS = 5000L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -70,6 +70,8 @@ public class HomePageActivity extends AppCompatActivity implements CustomBottomN
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        SharedPrefsUtils.logout(this);
 
         // Khởi tạo Repository
         productRepository = new ProductRepository(this);

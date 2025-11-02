@@ -42,7 +42,7 @@ public class CustomBottomNavigationView extends LinearLayout {
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.fragment_bottom_navigation, this, true);
 
-        sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
 
         LinearLayout navHome = findViewById(R.id.navHome);
         LinearLayout navPromotion = findViewById(R.id.navPromotion);
@@ -135,19 +135,6 @@ public class CustomBottomNavigationView extends LinearLayout {
 
             tvMyPNJLabel.setText(displayName);
         } else {
-            tvMyPNJLabel.setText("My PNJ");
-        }
-    }
-
-    /**
-     * Đăng xuất và reset tên về "My PNJ"
-     */
-    public void logout() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-
-        if (tvMyPNJLabel != null) {
             tvMyPNJLabel.setText("My PNJ");
         }
     }

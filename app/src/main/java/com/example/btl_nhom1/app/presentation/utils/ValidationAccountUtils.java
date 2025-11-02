@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import lombok.Getter;
+
 public class ValidationAccountUtils {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
             "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$"
@@ -51,9 +53,6 @@ public class ValidationAccountUtils {
         return PASSWORD_PATTERN.matcher(password).matches();
     }
 
-    /**
-     * Check password requirements individually
-     */
     public static class PasswordRequirements {
         public boolean hasLength;
         public boolean hasLowercase;
@@ -82,6 +81,7 @@ public class ValidationAccountUtils {
         }
     }
 
+    @Getter
     public static class ValidationResult {
         private final boolean valid;
         private final List<String> errors;
@@ -89,14 +89,6 @@ public class ValidationAccountUtils {
         public ValidationResult(boolean valid, List<String> errors) {
             this.valid = valid;
             this.errors = errors;
-        }
-
-        public boolean isValid() {
-            return valid;
-        }
-
-        public List<String> getErrors() {
-            return errors;
         }
 
         public String getFirstError() {

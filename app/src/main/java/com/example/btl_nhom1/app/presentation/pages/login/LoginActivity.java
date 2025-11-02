@@ -13,6 +13,7 @@ import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Account;
 import com.example.btl_nhom1.app.domain.repository.AccountRepository;
 import com.example.btl_nhom1.app.presentation.pages.home.HomePageActivity;
+import com.example.btl_nhom1.app.presentation.pages.register.RegisterActivity;
 import com.example.btl_nhom1.app.presentation.utils.SharedPrefsUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -62,8 +63,12 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Chức năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show());
 
         // Đăng ký
-        tvSignUp.setOnClickListener(v ->
-                Toast.makeText(this, "Chuyển đến trang đăng ký (chưa làm)", Toast.LENGTH_SHORT).show());
+        tvSignUp.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RegisterActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         // Trang chủ
         tvHomePage.setOnClickListener(v -> {

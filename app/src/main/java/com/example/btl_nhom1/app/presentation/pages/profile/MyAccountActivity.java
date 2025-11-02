@@ -18,6 +18,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.btl_nhom1.R;
 import com.example.btl_nhom1.app.domain.model.Account;
 import com.example.btl_nhom1.app.domain.repository.AccountRepository;
@@ -116,26 +119,46 @@ public class MyAccountActivity extends AppCompatActivity {
     }
 
     private void updateUI(Account account) {
+        Log.d("UPDATE_UI", "===== UPDATING UI =====");
+
         // Cập nhật tên
         String fullName = account.getFirstname() + " " + account.getLastname();
         tvUserName.setText(fullName);
+        Log.d("UPDATE_UI", "Name: " + fullName);
 
-        // Cập nhật mã user với format 10 số
-//        String userIdFormatted = String.format("Mã: %010d", account.getId());
-//        tvUserId.setText(userIdFormatted);
-
-        // Load avatar từ drawable
         String avatarName = account.getAvatar();
-        if (avatarName != null && !avatarName.isEmpty()) {
-            int avatarResId = getResources().getIdentifier(avatarName, "drawable", getPackageName());
-            if (avatarResId != 0) {
-                ivAvatar.setImageResource(avatarResId);
-            } else {
-                ivAvatar.setImageResource(R.drawable.ic_avatar);
-            }
+        String avatarExtension = account.getAvatarExtension();
+
+        if (avatarName != null && !avatarName.isEmpty() &&
+                avatarExtension != null && !avatarExtension.isEmpty()) {
+
+            // Tạo URL avatar - ip của máy ảo không đổi
+            String avatarUrl = "http://10.0.2.2/uploads/avatars/" + avatarName + "." + avatarExtension;
+            Log.d("UPDATE_UI", "Loading avatar from: " + avatarUrl);
+
+            // Load với Glide
+            Glide.with(this)
+                    .load(avatarUrl)
+                    .apply(new RequestOptions()
+                            .placeholder(R.drawable.ic_avatar)
+                            .error(R.drawable.ic_avatar)
+                            .circleCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(ivAvatar);
+
+            Log.d("UPDATE_UI", "Glide loading started");
         } else {
+            Log.d("UPDATE_UI", "No avatar, using default");
             ivAvatar.setImageResource(R.drawable.ic_avatar);
         }
+    }
+
+    private void clearAvatarCache() {
+        Glide.get(this).clearMemory();
+
+        new Thread(() -> {
+            Glide.get(this).clearDiskCache();
+        }).start();
     }
 
     private void loadFromSharedPreferences() {

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Account {
     @SerializedName(value = "id", alternate = {"userId", "accountId", "user_id", "account_id"})
     private int id;
+
     @SerializedName(value = "username", alternate = {"account", "userName", "user_name"})
     private String username;
 
@@ -45,7 +46,10 @@ public class Account {
     @SerializedName(value = "avatar", alternate = {"avatarUrl", "avatar_url", "image"})
     private String avatar;
 
+    private String avatarExtension;
+
     @SerializedName(value = "token", alternate = {"authToken", "auth_token", "accessToken"})
     private String token;
 
+    private String password;
 }
